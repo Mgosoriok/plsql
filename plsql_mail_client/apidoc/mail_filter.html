@@ -1,0 +1,575 @@
+<HTML>
+<HEAD>
+<META http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<TITLE>PL/SQL Email Client</TITLE>
+<LINK TITLE="Style" HREF="stylesheet.css" TYPE="text/css" REL="stylesheet">
+</HEAD>
+<BODY BGCOLOR="white">
+<TABLE CELLSPACING="0" CELLPADDING="1" WIDTH="100%" BORDER="0">
+<TR>
+<TD CLASS="NavBarRow1" COLSPAN="2">
+<TABLE CELLSPACING="3" CELLPADDING="0" BORDER="0">
+<TR VALIGN="top" ALIGN="center">
+<TD CLASS="NavBarRow1"><A HREF="summary.html"><FONT CLASS="NavBarFont1"><B>Overview</B></FONT></A> &nbsp;</TD><TD CLASS="NavBarRow1"><A HREF="deprecated-list.html"><FONT CLASS="NavBarFont1"><B>Deprecated</B></FONT></A> &nbsp;</TD><TD CLASS="NavBarRow1"><A HREF="index-list.html"><FONT CLASS="NavBarFont1"><B>Index</B></FONT></A> &nbsp;</TD><TD CLASS="NavBarRow1"><A HREF="generator.html"><FONT CLASS="NavBarFont1"><B>Generator</B></FONT></A> &nbsp;</TD>
+</TR>
+</TABLE>
+</TD><TD rowspan="3" VALIGN="top" ALIGN="right"><EM><b>PL/SQL Email Client</b></EM></TD>
+</TR>
+<TR>
+<TD CLASS="NavBarRow3" VALIGN="top"><FONT SIZE="-2">
+      SUMMARY:  <A HREF="#field_summary">FIELD</A> | <A HREF="#type_summary">TYPE</A> | <A HREF="#method_summary">METHOD</A></FONT></TD><TD CLASS="NavBarRow3" VALIGN="top"><FONT SIZE="-2">
+    DETAIL:  <A HREF="#field_detail">FIELD</A> | <A HREF="#type_detail">TYPE</A> | <A HREF="#method_detail">METHOD</A></FONT></TD>
+</TR>
+</TABLE>
+<HR>
+<H2>
+<FONT SIZE="-1"></FONT>
+<BR>
+    Package  mail_filter</H2> Use the package MAIL_FILTER to set search filters for the MAIL_CLIENT.GET_MAIL_HEADERS function.
+ Filters set with MAIL_FILTER are being executed on the mail server - so that fewer emails
+ will be downloaded to the database. So using MAIL_FILTER is typically more efficient thanm
+ filtering the result of MAIL_CLIENT.GET_MAIL_HEADERS with a SQL WHERE clause.
+ The various ADD_..._FILTER procedures add filters to the search operation being executed when
+ the mail headers are being retrieved. By default, multiple filters are being combined by AND. Use
+ the SET_FILTER_COMBINATION procedure to change this. The P_MATCH attribute of each filter
+ determines whether the mail server should look for true or false matches.
+ Use the CLEAR_FILTERS procedure in order to remove all filters previously set. MAIL_CLIENT.GET_MAIL_HEADERS
+ will then retrieve all mails of the selected server folder.
+ Usage:
+ <pre>
+ -- Retrieve only mails which were sent since yesterday
+ MAIL_FILTER.ADD_SENTDATE_FILTER(sysdate - 1, '>=', true);
+ -- Retrieve only mails which are sent directly to John Doe ("to", not "cc" or "bcc")
+ MAIL_FILTER.ADD_TO_FILTER('john.doe@company.com');
+ -- Retrieve all mails except those directly sent to John Doe ("to", not "cc" or "bcc")
+ MAIL_FILTER.ADD_TO_FILTER('john.doe@company.com', false);
+ </pre>
+<P></P>
+<DL></DL>
+<HR>
+<P></P>
+<A NAME="field_summary"></A>
+<TABLE WIDTH="100%" CELLSPACING="0" CELLPADDING="3" BORDER="1">
+<TR CLASS="TableHeadingColor">
+<TD COLSPAN="2"><FONT SIZE="+2"><B>Field Summary</B></FONT></TD>
+</TR>
+<TR CLASS="TableRowColor">
+<TD WIDTH="1%" VALIGN="top" ALIGN="right"><FONT SIZE="-1"><CODE>&nbsp;number</CODE></FONT></TD><TD><CODE><B><A HREF="#FILTER_COMB_AND">FILTER_COMB_AND</A></B></CODE>
+<BR>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+       Constant for mail filter combination: {filter1} AND {filter2} AND ... AND {filterN}
+</TD>
+</TR>
+<TR CLASS="TableRowColor">
+<TD WIDTH="1%" VALIGN="top" ALIGN="right"><FONT SIZE="-1"><CODE>&nbsp;number</CODE></FONT></TD><TD><CODE><B><A HREF="#FILTER_COMB_NOT_AND">FILTER_COMB_NOT_AND</A></B></CODE>
+<BR>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+       Constant for mail filter combination: NOT({filter1} AND {filter2} AND ... AND {filterN})
+</TD>
+</TR>
+<TR CLASS="TableRowColor">
+<TD WIDTH="1%" VALIGN="top" ALIGN="right"><FONT SIZE="-1"><CODE>&nbsp;number</CODE></FONT></TD><TD><CODE><B><A HREF="#FILTER_COMB_NOT_OR">FILTER_COMB_NOT_OR</A></B></CODE>
+<BR>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+       Constant for mail filter combination: NOT({filter1} OR {filter2} OR ... AND {filterN})
+</TD>
+</TR>
+<TR CLASS="TableRowColor">
+<TD WIDTH="1%" VALIGN="top" ALIGN="right"><FONT SIZE="-1"><CODE>&nbsp;number</CODE></FONT></TD><TD><CODE><B><A HREF="#FILTER_COMB_OR">FILTER_COMB_OR</A></B></CODE>
+<BR>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+       Constant for mail filter combination: {filter1} OR {filter2} OR ... OR {filterN}
+</TD>
+</TR>
+</TABLE>
+<P></P>
+<A NAME="type_summary"></A><A NAME="method_summary"></A>
+<TABLE WIDTH="100%" CELLSPACING="0" CELLPADDING="3" BORDER="1">
+<TR CLASS="TableHeadingColor">
+<TD COLSPAN="2"><FONT SIZE="+2"><B>Method Summary</B></FONT></TD>
+</TR>
+<TR CLASS="TableRowColor">
+<TD WIDTH="1%" VALIGN="top" ALIGN="right"><FONT SIZE="-1"><CODE>&nbsp;</CODE></FONT></TD><TD><CODE><B><A HREF="#add_bcc_filter(varchar2,boolean)">add_bcc_filter</A></B>(p_filter varchar2, p_match boolean)</CODE>
+<BR>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+       Adds a filter for the Email recipient attribute CC.</TD>
+</TR>
+<TR CLASS="TableRowColor">
+<TD WIDTH="1%" VALIGN="top" ALIGN="right"><FONT SIZE="-1"><CODE>&nbsp;</CODE></FONT></TD><TD><CODE><B><A HREF="#add_body_filter(varchar2,boolean)">add_body_filter</A></B>(p_filter varchar2, p_match boolean)</CODE>
+<BR>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+       Adds a filter to search within the email body.</TD>
+</TR>
+<TR CLASS="TableRowColor">
+<TD WIDTH="1%" VALIGN="top" ALIGN="right"><FONT SIZE="-1"><CODE>&nbsp;</CODE></FONT></TD><TD><CODE><B><A HREF="#add_cc_filter(varchar2,boolean)">add_cc_filter</A></B>(p_filter varchar2, p_match boolean)</CODE>
+<BR>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+       Adds a filter for the Email recipient attribute TO.</TD>
+</TR>
+<TR CLASS="TableRowColor">
+<TD WIDTH="1%" VALIGN="top" ALIGN="right"><FONT SIZE="-1"><CODE>&nbsp;</CODE></FONT></TD><TD><CODE><B><A HREF="#add_deleted_filter(boolean)">add_deleted_filter</A></B>(p_match boolean)</CODE>
+<BR>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+       Adds a filter for the "DELETED" flag of an email.</TD>
+</TR>
+<TR CLASS="TableRowColor">
+<TD WIDTH="1%" VALIGN="top" ALIGN="right"><FONT SIZE="-1"><CODE>&nbsp;</CODE></FONT></TD><TD><CODE><B><A HREF="#add_from_filter(varchar2,boolean)">add_from_filter</A></B>(p_filter varchar2, p_match boolean)</CODE>
+<BR>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+       Adds a filter for the Email sender attribute (FROM).</TD>
+</TR>
+<TR CLASS="TableRowColor">
+<TD WIDTH="1%" VALIGN="top" ALIGN="right"><FONT SIZE="-1"><CODE>&nbsp;</CODE></FONT></TD><TD><CODE><B><A HREF="#add_header_filter(varchar2,varchar2,boolean)">add_header_filter</A></B>(p_header varchar2, p_filter varchar2, p_match boolean)</CODE>
+<BR>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+       Adds a filter for any given Email haeder.</TD>
+</TR>
+<TR CLASS="TableRowColor">
+<TD WIDTH="1%" VALIGN="top" ALIGN="right"><FONT SIZE="-1"><CODE>&nbsp;</CODE></FONT></TD><TD><CODE><B><A HREF="#add_receiveddate_filter(date,varchar2,boolean)">add_receiveddate_filter</A></B>(p_filter date, p_comp varchar2, p_match boolean)</CODE>
+<BR>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+       Adds a filter for the datetime at which the Email was received by the mail server.</TD>
+</TR>
+<TR CLASS="TableRowColor">
+<TD WIDTH="1%" VALIGN="top" ALIGN="right"><FONT SIZE="-1"><CODE>&nbsp;</CODE></FONT></TD><TD><CODE><B><A HREF="#add_seen_filter(boolean)">add_seen_filter</A></B>(p_match boolean)</CODE>
+<BR>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+       Adds a filter for the "SEEN" flag of an email.</TD>
+</TR>
+<TR CLASS="TableRowColor">
+<TD WIDTH="1%" VALIGN="top" ALIGN="right"><FONT SIZE="-1"><CODE>&nbsp;</CODE></FONT></TD><TD><CODE><B><A HREF="#add_sentdate_filter(date,varchar2,boolean)">add_sentdate_filter</A></B>(p_filter date, p_comp varchar2, p_match boolean)</CODE>
+<BR>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+       Adds a filter for the datetime at which the Email was sent.</TD>
+</TR>
+<TR CLASS="TableRowColor">
+<TD WIDTH="1%" VALIGN="top" ALIGN="right"><FONT SIZE="-1"><CODE>&nbsp;</CODE></FONT></TD><TD><CODE><B><A HREF="#add_size_filter(number,varchar2,boolean)">add_size_filter</A></B>(p_filter number, p_comp varchar2, p_match boolean)</CODE>
+<BR>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+       Adds a filter for the message size.</TD>
+</TR>
+<TR CLASS="TableRowColor">
+<TD WIDTH="1%" VALIGN="top" ALIGN="right"><FONT SIZE="-1"><CODE>&nbsp;</CODE></FONT></TD><TD><CODE><B><A HREF="#add_subject_filter(varchar2,boolean)">add_subject_filter</A></B>(p_filter varchar2, p_negative boolean)</CODE>
+<BR>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+       Adds a filter for the Email subject.</TD>
+</TR>
+<TR CLASS="TableRowColor">
+<TD WIDTH="1%" VALIGN="top" ALIGN="right"><FONT SIZE="-1"><CODE>&nbsp;</CODE></FONT></TD><TD><CODE><B><A HREF="#add_to_filter(varchar2,boolean)">add_to_filter</A></B>(p_filter varchar2, p_match boolean)</CODE>
+<BR>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+       Adds a filter for the Email recipient attribute BCC.</TD>
+</TR>
+<TR CLASS="TableRowColor">
+<TD WIDTH="1%" VALIGN="top" ALIGN="right"><FONT SIZE="-1"><CODE>&nbsp;</CODE></FONT></TD><TD><CODE><B><A HREF="#clear_filters">clear_filters</A></B>()</CODE>
+<BR>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+       Clears all previously set mail filters.</TD>
+</TR>
+<TR CLASS="TableRowColor">
+<TD WIDTH="1%" VALIGN="top" ALIGN="right"><FONT SIZE="-1"><CODE>&nbsp;</CODE></FONT></TD><TD><CODE><B><A HREF="#set_filter_combination(number)">set_filter_combination</A></B>(p_combination number)</CODE>
+<BR>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+       Determines how multiple search filters are to be combined.</TD>
+</TR>
+</TABLE>
+<P></P>
+<A NAME="trigger_summary"></A><A NAME="field_detail"></A>
+<TABLE WIDTH="100%" CELLSPACING="0" CELLPADDING="3" BORDER="1">
+<TR CLASS="TableHeadingColor">
+<TD COLSPAN="1"><FONT SIZE="+2"><B>Field Detail</B></FONT></TD>
+</TR>
+</TABLE>
+<A NAME="FILTER_COMB_AND"></A>
+<H3>FILTER_COMB_AND</H3>
+<PRE>
+  public number <B>FILTER_COMB_AND</B>
+</PRE>
+<DL>
+<DD> Constant for mail filter combination: {filter1} AND {filter2} AND ... AND {filterN}
+</DD>
+<DD>
+<DL></DL>
+</DD>
+</DL>
+<HR>
+<A NAME="FILTER_COMB_OR"></A>
+<H3>FILTER_COMB_OR</H3>
+<PRE>
+  public number <B>FILTER_COMB_OR</B>
+</PRE>
+<DL>
+<DD> Constant for mail filter combination: {filter1} OR {filter2} OR ... OR {filterN}
+</DD>
+<DD>
+<DL></DL>
+</DD>
+</DL>
+<HR>
+<A NAME="FILTER_COMB_NOT_AND"></A>
+<H3>FILTER_COMB_NOT_AND</H3>
+<PRE>
+  public number <B>FILTER_COMB_NOT_AND</B>
+</PRE>
+<DL>
+<DD> Constant for mail filter combination: NOT({filter1} AND {filter2} AND ... AND {filterN})
+</DD>
+<DD>
+<DL></DL>
+</DD>
+</DL>
+<HR>
+<A NAME="FILTER_COMB_NOT_OR"></A>
+<H3>FILTER_COMB_NOT_OR</H3>
+<PRE>
+  public number <B>FILTER_COMB_NOT_OR</B>
+</PRE>
+<DL>
+<DD> Constant for mail filter combination: NOT({filter1} OR {filter2} OR ... AND {filterN})
+</DD>
+<DD>
+<DL></DL>
+</DD>
+</DL>
+<HR>
+<A NAME="type_detail"></A><A NAME="method_detail"></A>
+<TABLE WIDTH="100%" CELLSPACING="0" CELLPADDING="3" BORDER="1">
+<TR CLASS="TableHeadingColor">
+<TD COLSPAN="1"><FONT SIZE="+2"><B>Method Detail</B></FONT></TD>
+</TR>
+</TABLE>
+<A NAME="clear_filters"></A>
+<H3>clear_filters</H3>
+<PRE>public  <B>clear_filters</B>()</PRE>
+<DL>
+<DD> Clears all previously set mail filters. GET_MAIL_HEADERS will not return all contents of the mail
+ folder.
+</DD>
+<DD>
+<DL></DL>
+</DD>
+<P></P>
+<DL></DL>
+</DL>
+<HR>
+<A NAME="add_from_filter(varchar2,boolean)"></A>
+<H3>add_from_filter</H3>
+<PRE>public  <B>add_from_filter</B>(p_filter varchar2, <BR>                        p_match boolean)</PRE>
+<DL>
+<DD> Adds a filter for the Email sender attribute (FROM).
+ Subsequent calls of GET_MAIL_HEADERS will only return Emails matching this filter
+</DD>
+<DD>
+<DL>
+<DT>Parameters:
+        <DD>
+<CODE>p_filter</CODE> -
+              The text for search for in the FROM attribute of an email.</DD>
+<DD>
+<CODE>p_match</CODE> -
+              <b>true</b> (default): return email matching the filter - <b>false</b>: return all other emails</DD>
+</DT>
+</DL>
+</DD>
+<P></P>
+<DL></DL>
+</DL>
+<HR>
+<A NAME="add_cc_filter(varchar2,boolean)"></A>
+<H3>add_cc_filter</H3>
+<PRE>public  <B>add_cc_filter</B>(p_filter varchar2, <BR>                      p_match boolean)</PRE>
+<DL>
+<DD> Adds a filter for the Email recipient attribute TO.
+ Subsequent calls of GET_MAIL_HEADERS will only return Emails matching this filter
+</DD>
+<DD>
+<DL>
+<DT>Parameters:
+        <DD>
+<CODE>p_filter</CODE> -
+              The text for search for in the TO attribute of an email.</DD>
+<DD>
+<CODE>p_match</CODE> -
+              <b>true</b> (default): return email matching the filter - <b>false</b>: return all other emails</DD>
+</DT>
+</DL>
+</DD>
+<P></P>
+<DL></DL>
+</DL>
+<HR>
+<A NAME="add_bcc_filter(varchar2,boolean)"></A>
+<H3>add_bcc_filter</H3>
+<PRE>public  <B>add_bcc_filter</B>(p_filter varchar2, <BR>                       p_match boolean)</PRE>
+<DL>
+<DD> Adds a filter for the Email recipient attribute CC.
+ Subsequent calls of GET_MAIL_HEADERS will only return Emails matching this filter
+</DD>
+<DD>
+<DL>
+<DT>Parameters:
+        <DD>
+<CODE>p_filter</CODE> -
+              The text for search for in the CC attribute of an email.</DD>
+<DD>
+<CODE>p_match</CODE> -
+              <b>true</b> (default): return email matching the filter - <b>false</b>: return all other emails</DD>
+</DT>
+</DL>
+</DD>
+<P></P>
+<DL></DL>
+</DL>
+<HR>
+<A NAME="add_to_filter(varchar2,boolean)"></A>
+<H3>add_to_filter</H3>
+<PRE>public  <B>add_to_filter</B>(p_filter varchar2, <BR>                      p_match boolean)</PRE>
+<DL>
+<DD> Adds a filter for the Email recipient attribute BCC.
+ Subsequent calls of GET_MAIL_HEADERS will only return Emails matching this filter
+</DD>
+<DD>
+<DL>
+<DT>Parameters:
+        <DD>
+<CODE>p_filter</CODE> -
+              The text for search for in the BCC attribute of an email.</DD>
+<DD>
+<CODE>p_match</CODE> -
+              <b>true</b> (default): return email matching the filter - <b>false</b>: return all other emails</DD>
+</DT>
+</DL>
+</DD>
+<P></P>
+<DL></DL>
+</DL>
+<HR>
+<A NAME="add_sentdate_filter(date,varchar2,boolean)"></A>
+<H3>add_sentdate_filter</H3>
+<PRE>public  <B>add_sentdate_filter</B>(p_filter date, <BR>                            p_comp varchar2, <BR>                            p_match boolean)</PRE>
+<DL>
+<DD> Adds a filter for the datetime at which the Email was sent.
+ Subsequent calls of GET_MAIL_HEADERS will only return Emails matching this filter
+</DD>
+<DD>
+<DL>
+<DT>Parameters:
+        <DD>
+<CODE>p_filter</CODE> -
+              The date to compare with the send date of the email.</DD>
+<DD>
+<CODE>p_comp</CODE> -
+              Comparison operator: Choose between =, !=, &lt; &gt; &lt;= or &gt;=</DD>
+<DD>
+<CODE>p_match</CODE> -
+              <b>true</b> (default): return email matching the filter - <b>false</b>: return all other emails</DD>
+</DT>
+</DL>
+</DD>
+<P></P>
+<DL></DL>
+</DL>
+<HR>
+<A NAME="add_receiveddate_filter(date,varchar2,boolean)"></A>
+<H3>add_receiveddate_filter</H3>
+<PRE>public  <B>add_receiveddate_filter</B>(p_filter date, <BR>                                p_comp varchar2, <BR>                                p_match boolean)</PRE>
+<DL>
+<DD> Adds a filter for the datetime at which the Email was received by the mail server.
+ Subsequent calls of GET_MAIL_HEADERS will only return Emails matching this filter
+</DD>
+<DD>
+<DL>
+<DT>Parameters:
+        <DD>
+<CODE>p_filter</CODE> -
+              The date to compare with the receiving date of the email.</DD>
+<DD>
+<CODE>p_comp</CODE> -
+              Comparison operator: Choose between =, !=, &lt; &gt; &lt;= or &gt;=</DD>
+<DD>
+<CODE>p_match</CODE> -
+              <b>true</b> (default): return email matching the filter - <b>false</b>: return all other emails</DD>
+</DT>
+</DL>
+</DD>
+<P></P>
+<DL></DL>
+</DL>
+<HR>
+<A NAME="add_subject_filter(varchar2,boolean)"></A>
+<H3>add_subject_filter</H3>
+<PRE>public  <B>add_subject_filter</B>(p_filter varchar2, <BR>                           p_negative boolean)</PRE>
+<DL>
+<DD> Adds a filter for the Email subject.
+ Subsequent calls of GET_MAIL_HEADERS will only return Emails matching this filter
+</DD>
+<DD>
+<DL>
+<DT>Parameters:
+        <DD>
+<CODE>p_filter</CODE> -
+              The text for search for in the email subject.</DD>
+</DT>
+</DL>
+</DD>
+<P></P>
+<DL></DL>
+</DL>
+<HR>
+<A NAME="add_deleted_filter(boolean)"></A>
+<H3>add_deleted_filter</H3>
+<PRE>public  <B>add_deleted_filter</B>(p_match boolean)</PRE>
+<DL>
+<DD> Adds a filter for the "DELETED" flag of an email.
+ Subsequent calls of GET_MAIL_HEADERS will only return Emails matching this filter
+</DD>
+<DD>
+<DL>
+<DT>Parameters:
+        <DD>
+<CODE>p_match</CODE> -
+              <b>true</b> (default): return email matching the filter - <b>false</b>: return all other emails</DD>
+</DT>
+</DL>
+</DD>
+<P></P>
+<DL></DL>
+</DL>
+<HR>
+<A NAME="add_header_filter(varchar2,varchar2,boolean)"></A>
+<H3>add_header_filter</H3>
+<PRE>public  <B>add_header_filter</B>(p_header varchar2, <BR>                          p_filter varchar2, <BR>                          p_match boolean)</PRE>
+<DL>
+<DD> Adds a filter for any given Email haeder.
+ Subsequent calls of GET_MAIL_HEADERS will only return Emails matching this filter
+</DD>
+<DD>
+<DL>
+<DT>Parameters:
+        <DD>
+<CODE>p_header</CODE> -
+              The name of the header field to filter on.</DD>
+<DD>
+<CODE>p_filter</CODE> -
+              The text for search for in the given header.</DD>
+<DD>
+<CODE>p_match</CODE> -
+              <b>true</b> (default): return email matching the filter - <b>false</b>: return all other emails</DD>
+</DT>
+</DL>
+</DD>
+<P></P>
+<DL></DL>
+</DL>
+<HR>
+<A NAME="add_seen_filter(boolean)"></A>
+<H3>add_seen_filter</H3>
+<PRE>public  <B>add_seen_filter</B>(p_match boolean)</PRE>
+<DL>
+<DD> Adds a filter for the "SEEN" flag of an email.
+ Subsequent calls of GET_MAIL_HEADERS will only return Emails matching this filter
+</DD>
+<DD>
+<DL>
+<DT>Parameters:
+        <DD>
+<CODE>p_match</CODE> -
+              <b>true</b> (default): return email matching the filter - <b>false</b>: return all other emails</DD>
+</DT>
+</DL>
+</DD>
+<P></P>
+<DL></DL>
+</DL>
+<HR>
+<A NAME="add_body_filter(varchar2,boolean)"></A>
+<H3>add_body_filter</H3>
+<PRE>public  <B>add_body_filter</B>(p_filter varchar2, <BR>                        p_match boolean)</PRE>
+<DL>
+<DD> Adds a filter to search within the email body. All parts of type "text/*" are being searched.
+ Subsequent calls of GET_MAIL_HEADERS will only return Emails matching this filter
+</DD>
+<DD>
+<DL>
+<DT>Parameters:
+        <DD>
+<CODE>p_match</CODE> -
+              <b>true</b> (default): return email matching the filter - <b>false</b>: return all other emails</DD>
+</DT>
+</DL>
+</DD>
+<P></P>
+<DL></DL>
+</DL>
+<HR>
+<A NAME="add_size_filter(number,varchar2,boolean)"></A>
+<H3>add_size_filter</H3>
+<PRE>public  <B>add_size_filter</B>(p_filter number, <BR>                        p_comp varchar2, <BR>                        p_match boolean)</PRE>
+<DL>
+<DD> Adds a filter for the message size.
+ Subsequent calls of GET_MAIL_HEADERS will only return Emails matching this filter
+</DD>
+<DD>
+<DL>
+<DT>Parameters:
+        <DD>
+<CODE>p_filter</CODE> -
+              The size to be compared with in bytes.</DD>
+<DD>
+<CODE>p_comp</CODE> -
+              Comparison operator: Choose between =, !=, &lt; &gt; &lt;= or &gt;=</DD>
+<DD>
+<CODE>p_match</CODE> -
+              <b>true</b> (default): return email matching the filter - <b>false</b>: return all other emails</DD>
+</DT>
+</DL>
+</DD>
+<P></P>
+<DL></DL>
+</DL>
+<HR>
+<A NAME="set_filter_combination(number)"></A>
+<H3>set_filter_combination</H3>
+<PRE>public  <B>set_filter_combination</B>(p_combination number)</PRE>
+<DL>
+<DD> Determines how multiple search filters are to be combined.
+</DD>
+<DD>
+<DL>
+<DT>Parameters:
+        <DD>
+<CODE>p_combination</CODE> -
+              Choose one of the 4 predefined constants.
+ <pre>
+ FILTER_COMB_AND:     {filter1} AND {filter2} AND ... {filterN}
+ FILTER_COMB_OR:      {filter1} OR {filter2} OR ... {filterN}
+ FILTER_COMB_NOT_AND: NOT ( {filter1} AND {filter2} AND ... {filterN} )
+ FILTER_COMB_NOT_OR:  NOT ( {filter1} OR {filter2} OR ... {filterN} )
+ </pre></DD>
+</DT>
+</DL>
+</DD>
+<P></P>
+<DL></DL>
+</DL>
+<HR>
+<A NAME="trigger_detail"></A>
+<TABLE CELLSPACING="0" CELLPADDING="1" WIDTH="100%" BORDER="0">
+<TR>
+<TD CLASS="NavBarRow1" COLSPAN="2">
+<TABLE CELLSPACING="3" CELLPADDING="0" BORDER="0">
+<TR VALIGN="top" ALIGN="center">
+<TD CLASS="NavBarRow1"><A HREF="summary.html"><FONT CLASS="NavBarFont1"><B>Overview</B></FONT></A> &nbsp;</TD><TD CLASS="NavBarRow1"><A HREF="deprecated-list.html"><FONT CLASS="NavBarFont1"><B>Deprecated</B></FONT></A> &nbsp;</TD><TD CLASS="NavBarRow1"><A HREF="index-list.html"><FONT CLASS="NavBarFont1"><B>Index</B></FONT></A> &nbsp;</TD><TD CLASS="NavBarRow1"><A HREF="generator.html"><FONT CLASS="NavBarFont1"><B>Generator</B></FONT></A> &nbsp;</TD>
+</TR>
+</TABLE>
+</TD><TD rowspan="3" VALIGN="top" ALIGN="right"><EM><b>PL/SQL Email Client</b></EM></TD>
+</TR>
+<TR>
+<TD CLASS="NavBarRow3" VALIGN="top"><FONT SIZE="-2">
+      SUMMARY:  <A HREF="#field_summary">FIELD</A> | <A HREF="#type_summary">TYPE</A> | <A HREF="#method_summary">METHOD</A></FONT></TD><TD CLASS="NavBarRow3" VALIGN="top"><FONT SIZE="-2">
+    DETAIL:  <A HREF="#field_detail">FIELD</A> | <A HREF="#type_detail">TYPE</A> | <A HREF="#method_detail">METHOD</A></FONT></TD>
+</TR>
+</TABLE>
+<HR>
+</BODY>
+</HTML>

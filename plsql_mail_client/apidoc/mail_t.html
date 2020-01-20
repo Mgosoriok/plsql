@@ -1,0 +1,1005 @@
+<HTML>
+<HEAD>
+<META http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<TITLE>PL/SQL Email Client</TITLE>
+<LINK TITLE="Style" HREF="stylesheet.css" TYPE="text/css" REL="stylesheet">
+</HEAD>
+<BODY BGCOLOR="white">
+<TABLE CELLSPACING="0" CELLPADDING="1" WIDTH="100%" BORDER="0">
+<TR>
+<TD CLASS="NavBarRow1" COLSPAN="2">
+<TABLE CELLSPACING="3" CELLPADDING="0" BORDER="0">
+<TR VALIGN="top" ALIGN="center">
+<TD CLASS="NavBarRow1"><A HREF="summary.html"><FONT CLASS="NavBarFont1"><B>Overview</B></FONT></A> &nbsp;</TD><TD CLASS="NavBarRow1"><A HREF="deprecated-list.html"><FONT CLASS="NavBarFont1"><B>Deprecated</B></FONT></A> &nbsp;</TD><TD CLASS="NavBarRow1"><A HREF="index-list.html"><FONT CLASS="NavBarFont1"><B>Index</B></FONT></A> &nbsp;</TD><TD CLASS="NavBarRow1"><A HREF="generator.html"><FONT CLASS="NavBarFont1"><B>Generator</B></FONT></A> &nbsp;</TD>
+</TR>
+</TABLE>
+</TD><TD rowspan="3" VALIGN="top" ALIGN="right"><EM><b>PL/SQL Email Client</b></EM></TD>
+</TR>
+<TR>
+<TD CLASS="NavBarRow3" VALIGN="top"><FONT SIZE="-2">
+      SUMMARY:  <A HREF="#field_summary">FIELD</A> | <A HREF="#type_summary">TYPE</A> | <A HREF="#method_summary">METHOD</A></FONT></TD><TD CLASS="NavBarRow3" VALIGN="top"><FONT SIZE="-2">
+    DETAIL:  <A HREF="#field_detail">FIELD</A> | <A HREF="#type_detail">TYPE</A> | <A HREF="#method_detail">METHOD</A></FONT></TD>
+</TR>
+</TABLE>
+<HR>
+<H2>
+<FONT SIZE="-1"></FONT>
+<BR>
+    Package  mail_t</H2> The object type <b>MAIL_T</b> represents a message in the mailbox folder. A <b>MAIL_T</b>
+ object is obtained either by the <b>MAIL_CLIENT</b>.<b>GET_MESSAGE</b> ...
+ functions.
+ <pre>
+ SELECT MAIL_CLIENT.GET_MESSAGE([<i>msgnum</i>]) FROM DUAL
+ </pre> ... or <b>MAIL_CLIENT.GET_MAIL_HEADERS</b> ...
+ <pre>
+ SELECT VALUE(o) MAIL_OBJECT FROM TABLE(MAIL_CLIENT.GET_MAIL_HEADERS())
+ </pre>
+<P></P>
+<DL></DL>
+<HR>
+<P></P>
+<A NAME="field_summary"></A>
+<TABLE WIDTH="100%" CELLSPACING="0" CELLPADDING="3" BORDER="1">
+<TR CLASS="TableHeadingColor">
+<TD COLSPAN="2"><FONT SIZE="+2"><B>Field Summary</B></FONT></TD>
+</TR>
+<TR CLASS="TableRowColor">
+<TD WIDTH="1%" VALIGN="top" ALIGN="right"><FONT SIZE="-1"><CODE>&nbsp;char(1)</CODE></FONT></TD><TD><CODE><B><A HREF="#answered">answered</A></B></CODE>
+<BR>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      Indicates whether the message is marked as "answered".</TD>
+</TR>
+<TR CLASS="TableRowColor">
+<TD WIDTH="1%" VALIGN="top" ALIGN="right"><FONT SIZE="-1"><CODE>&nbsp;varchar2(100)</CODE></FONT></TD><TD><CODE><B><A HREF="#content_type">content_type</A></B></CODE>
+<BR>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      Content Type of the message.</TD>
+</TR>
+<TR CLASS="TableRowColor">
+<TD WIDTH="1%" VALIGN="top" ALIGN="right"><FONT SIZE="-1"><CODE>&nbsp;char(1)</CODE></FONT></TD><TD><CODE><B><A HREF="#deleted">deleted</A></B></CODE>
+<BR>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      Indicates whether the message is marked as "deleted".</TD>
+</TR>
+<TR CLASS="TableRowColor">
+<TD WIDTH="1%" VALIGN="top" ALIGN="right"><FONT SIZE="-1"><CODE>&nbsp;number</CODE></FONT></TD><TD><CODE><B><A HREF="#message_size">message_size</A></B></CODE>
+<BR>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      Message size in bytes.</TD>
+</TR>
+<TR CLASS="TableRowColor">
+<TD WIDTH="1%" VALIGN="top" ALIGN="right"><FONT SIZE="-1"><CODE>&nbsp;number(10)</CODE></FONT></TD><TD><CODE><B><A HREF="#msg_number">msg_number</A></B></CODE>
+<BR>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      A Message object's message number is the relative position of this Message in its Folder.</TD>
+</TR>
+<TR CLASS="TableRowColor">
+<TD WIDTH="1%" VALIGN="top" ALIGN="right"><FONT SIZE="-1"><CODE>&nbsp;char(1)</CODE></FONT></TD><TD><CODE><B><A HREF="#read">read</A></B></CODE>
+<BR>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      Indicates whether the message is marked as "read".</TD>
+</TR>
+<TR CLASS="TableRowColor">
+<TD WIDTH="1%" VALIGN="top" ALIGN="right"><FONT SIZE="-1"><CODE>&nbsp;char(1)</CODE></FONT></TD><TD><CODE><B><A HREF="#recent">recent</A></B></CODE>
+<BR>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      Indicates whether the message is marked as "recent".</TD>
+</TR>
+<TR CLASS="TableRowColor">
+<TD WIDTH="1%" VALIGN="top" ALIGN="right"><FONT SIZE="-1"><CODE>&nbsp;varchar2(100)</CODE></FONT></TD><TD><CODE><B><A HREF="#sender">sender</A></B></CODE>
+<BR>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      Sender name of the message
+</TD>
+</TR>
+<TR CLASS="TableRowColor">
+<TD WIDTH="1%" VALIGN="top" ALIGN="right"><FONT SIZE="-1"><CODE>&nbsp;varchar2(100)</CODE></FONT></TD><TD><CODE><B><A HREF="#sender_email">sender_email</A></B></CODE>
+<BR>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      Sender email of the message
+</TD>
+</TR>
+<TR CLASS="TableRowColor">
+<TD WIDTH="1%" VALIGN="top" ALIGN="right"><FONT SIZE="-1"><CODE>&nbsp;date</CODE></FONT></TD><TD><CODE><B><A HREF="#sent_date">sent_date</A></B></CODE>
+<BR>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      Date on which the message was sent.</TD>
+</TR>
+<TR CLASS="TableRowColor">
+<TD WIDTH="1%" VALIGN="top" ALIGN="right"><FONT SIZE="-1"><CODE>&nbsp;varchar2(4000)</CODE></FONT></TD><TD><CODE><B><A HREF="#subject">subject</A></B></CODE>
+<BR>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      Subject of the message
+</TD>
+</TR>
+</TABLE>
+<P></P>
+<A NAME="type_summary"></A><A NAME="method_summary"></A>
+<TABLE WIDTH="100%" CELLSPACING="0" CELLPADDING="3" BORDER="1">
+<TR CLASS="TableHeadingColor">
+<TD COLSPAN="2"><FONT SIZE="+2"><B>Method Summary</B></FONT></TD>
+</TR>
+<TR CLASS="TableRowColor">
+<TD WIDTH="1%" VALIGN="top" ALIGN="right"><FONT SIZE="-1"><CODE>&nbsp;</CODE></FONT></TD><TD><CODE><B><A HREF="#copy_message(varchar2)">copy_message</A></B>(p_target_folder varchar2)</CODE>
+<BR>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+       Copies the message to another mailbox folder.</TD>
+</TR>
+<TR CLASS="TableRowColor">
+<TD WIDTH="1%" VALIGN="top" ALIGN="right"><FONT SIZE="-1"><CODE>&nbsp;blob</CODE></FONT></TD><TD><CODE><B><A HREF="#dump_blob">dump_blob</A></B>()</CODE>
+<BR>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+       Dumps the message "as it is"; i.e. does not interpret the message strcuture.
+</TD>
+</TR>
+<TR CLASS="TableRowColor">
+<TD WIDTH="1%" VALIGN="top" ALIGN="right"><FONT SIZE="-1"><CODE>&nbsp;clob</CODE></FONT></TD><TD><CODE><B><A HREF="#dump_clob">dump_clob</A></B>()</CODE>
+<BR>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+       Dumps the message "as it is"; i.e. does not interpret the message strcuture.
+</TD>
+</TR>
+<TR CLASS="TableRowColor">
+<TD WIDTH="1%" VALIGN="top" ALIGN="right"><FONT SIZE="-1"><CODE>&nbsp;blob</CODE></FONT></TD><TD><CODE><B><A HREF="#get_bodypart_content_blob(varchar2)">get_bodypart_content_blob</A></B>(p_partindexes varchar2)</CODE>
+<BR>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+       Returns the content of the messages' body part as BLOB.</TD>
+</TR>
+<TR CLASS="TableRowColor">
+<TD WIDTH="1%" VALIGN="top" ALIGN="right"><FONT SIZE="-1"><CODE>&nbsp;clob</CODE></FONT></TD><TD><CODE><B><A HREF="#get_bodypart_content_clob(varchar2)">get_bodypart_content_clob</A></B>(p_partindexes varchar2)</CODE>
+<BR>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+       Returns the content of the messages' body part as CLOB.</TD>
+</TR>
+<TR CLASS="TableRowColor">
+<TD WIDTH="1%" VALIGN="top" ALIGN="right"><FONT SIZE="-1"><CODE>&nbsp;varchar2</CODE></FONT></TD><TD><CODE><B><A HREF="#get_bodypart_content_type(varchar2)">get_bodypart_content_type</A></B>(p_partindexes varchar2)</CODE>
+<BR>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+       Returns the messages' content type
+</TD>
+</TR>
+<TR CLASS="TableRowColor">
+<TD WIDTH="1%" VALIGN="top" ALIGN="right"><FONT SIZE="-1"><CODE>&nbsp;varchar2</CODE></FONT></TD><TD><CODE><B><A HREF="#get_bodypart_content_varchar2(varchar2)">get_bodypart_content_varchar2</A></B>(p_partindexes varchar2)</CODE>
+<BR>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+       Returns the content of the messages' body part as VARCHAR2.</TD>
+</TR>
+<TR CLASS="TableRowColor">
+<TD WIDTH="1%" VALIGN="top" ALIGN="right"><FONT SIZE="-1"><CODE>&nbsp;number</CODE></FONT></TD><TD><CODE><B><A HREF="#get_bodypart_multipart_count(varchar2)">get_bodypart_multipart_count</A></B>(p_partindexes varchar2)</CODE>
+<BR>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+       Returns for a messages' body part (which is of type "multipart") the number of child body parts.</TD>
+</TR>
+<TR CLASS="TableRowColor">
+<TD WIDTH="1%" VALIGN="top" ALIGN="right"><FONT SIZE="-1"><CODE>&nbsp;clob</CODE></FONT></TD><TD><CODE><B><A HREF="#get_content_clob">get_content_clob</A></B>()</CODE>
+<BR>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+       Tries to retrieve the text content of simple or multipart messages as a <b>CLOB</b>.</TD>
+</TR>
+<TR CLASS="TableRowColor">
+<TD WIDTH="1%" VALIGN="top" ALIGN="right"><FONT SIZE="-1"><CODE>&nbsp;varchar2</CODE></FONT></TD><TD><CODE><B><A HREF="#get_content_type">get_content_type</A></B>()</CODE>
+<BR>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+       Returns the messages' content type
+</TD>
+</TR>
+<TR CLASS="TableRowColor">
+<TD WIDTH="1%" VALIGN="top" ALIGN="right"><FONT SIZE="-1"><CODE>&nbsp;varchar2</CODE></FONT></TD><TD><CODE><B><A HREF="#get_content_varchar2">get_content_varchar2</A></B>()</CODE>
+<BR>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+       Tries to retrieve the text content of simple or multipart messages as <b>VARCHAR2</b>.</TD>
+</TR>
+<TR CLASS="TableRowColor">
+<TD WIDTH="1%" VALIGN="top" ALIGN="right"><FONT SIZE="-1"><CODE>&nbsp;mail_header_t</CODE></FONT></TD><TD><CODE><B><A HREF="#get_headers(varchar2)">get_headers</A></B>(p_partindexes varchar2)</CODE>
+<BR>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+       Lists all email headers of the specified body part.</TD>
+</TR>
+<TR CLASS="TableRowColor">
+<TD WIDTH="1%" VALIGN="top" ALIGN="right"><FONT SIZE="-1"><CODE>&nbsp;mail_header_t</CODE></FONT></TD><TD><CODE><B><A HREF="#get_headers">get_headers</A></B>()</CODE>
+<BR>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+       Lists all message headers
+</TD>
+</TR>
+<TR CLASS="TableRowColor">
+<TD WIDTH="1%" VALIGN="top" ALIGN="right"><FONT SIZE="-1"><CODE>&nbsp;number</CODE></FONT></TD><TD><CODE><B><A HREF="#get_multipart_count">get_multipart_count</A></B>()</CODE>
+<BR>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+       Returns for multipart messages the content type of a specific body part.</TD>
+</TR>
+<TR CLASS="TableRowColor">
+<TD WIDTH="1%" VALIGN="top" ALIGN="right"><FONT SIZE="-1"><CODE>&nbsp;varchar2</CODE></FONT></TD><TD><CODE><B><A HREF="#get_priority">get_priority</A></B>()</CODE>
+<BR>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+       Returns the messages' priority flag
+</TD>
+</TR>
+<TR CLASS="TableRowColor">
+<TD WIDTH="1%" VALIGN="top" ALIGN="right"><FONT SIZE="-1"><CODE>&nbsp;date</CODE></FONT></TD><TD><CODE><B><A HREF="#get_receivedate">get_receivedate</A></B>()</CODE>
+<BR>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+       Returns the datetime at which the message has been received by the mail server.</TD>
+</TR>
+<TR CLASS="TableRowColor">
+<TD WIDTH="1%" VALIGN="top" ALIGN="right"><FONT SIZE="-1"><CODE>&nbsp;mail_addr_t</CODE></FONT></TD><TD><CODE><B><A HREF="#get_recipients">get_recipients</A></B>()</CODE>
+<BR>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+       Returns all message recipients as table of MAIL_ADDR_T
+</TD>
+</TR>
+<TR CLASS="TableRowColor">
+<TD WIDTH="1%" VALIGN="top" ALIGN="right"><FONT SIZE="-1"><CODE>&nbsp;clob</CODE></FONT></TD><TD><CODE><B><A HREF="#get_simple_content_clob">get_simple_content_clob</A></B>()</CODE>
+<BR>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+       Retrieves the content of a simple text message as a CLOB.</TD>
+</TR>
+<TR CLASS="TableRowColor">
+<TD WIDTH="1%" VALIGN="top" ALIGN="right"><FONT SIZE="-1"><CODE>&nbsp;varchar2</CODE></FONT></TD><TD><CODE><B><A HREF="#get_simple_content_varchar2">get_simple_content_varchar2</A></B>()</CODE>
+<BR>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+       Retrieves the content of a simple text message as VARCHAR2.</TD>
+</TR>
+<TR CLASS="TableRowColor">
+<TD WIDTH="1%" VALIGN="top" ALIGN="right"><FONT SIZE="-1"><CODE>&nbsp;number</CODE></FONT></TD><TD><CODE><B><A HREF="#get_size(varchar2)">get_size</A></B>(p_partindexes varchar2)</CODE>
+<BR>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+       Returns the size of the specified body part in bytes.</TD>
+</TR>
+<TR CLASS="TableRowColor">
+<TD WIDTH="1%" VALIGN="top" ALIGN="right"><FONT SIZE="-1"><CODE>&nbsp;number</CODE></FONT></TD><TD><CODE><B><A HREF="#get_size">get_size</A></B>()</CODE>
+<BR>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+       Returns the size of the whole message in bytes.</TD>
+</TR>
+<TR CLASS="TableRowColor">
+<TD WIDTH="1%" VALIGN="top" ALIGN="right"><FONT SIZE="-1"><CODE>&nbsp;mail_part_t</CODE></FONT></TD><TD><CODE><B><A HREF="#get_structure">get_structure</A></B>()</CODE>
+<BR>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+       Returns (for multipart messages) the information about the contained body part hierarchy
+ as <i>table of MAIL_PART_T</i>.</TD>
+</TR>
+<TR CLASS="TableRowColor">
+<TD WIDTH="1%" VALIGN="top" ALIGN="right"><FONT SIZE="-1"><CODE>&nbsp;varchar2</CODE></FONT></TD><TD><CODE><B><A HREF="#get_uid">get_uid</A></B>()</CODE>
+<BR>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+       Returns the message UID (if available)
+</TD>
+</TR>
+<TR CLASS="TableRowColor">
+<TD WIDTH="1%" VALIGN="top" ALIGN="right"><FONT SIZE="-1"><CODE>&nbsp;</CODE></FONT></TD><TD><CODE><B><A HREF="#mark_deleted">mark_deleted</A></B>()</CODE>
+<BR>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+       Mark the message as "deleted".</TD>
+</TR>
+<TR CLASS="TableRowColor">
+<TD WIDTH="1%" VALIGN="top" ALIGN="right"><FONT SIZE="-1"><CODE>&nbsp;</CODE></FONT></TD><TD><CODE><B><A HREF="#mark_read">mark_read</A></B>()</CODE>
+<BR>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+       Mark the message as "read".</TD>
+</TR>
+<TR CLASS="TableRowColor">
+<TD WIDTH="1%" VALIGN="top" ALIGN="right"><FONT SIZE="-1"><CODE>&nbsp;</CODE></FONT></TD><TD><CODE><B><A HREF="#mark_undeleted">mark_undeleted</A></B>()</CODE>
+<BR>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+       Removed the "deleted" mark from the message.</TD>
+</TR>
+<TR CLASS="TableRowColor">
+<TD WIDTH="1%" VALIGN="top" ALIGN="right"><FONT SIZE="-1"><CODE>&nbsp;</CODE></FONT></TD><TD><CODE><B><A HREF="#mark_unread">mark_unread</A></B>()</CODE>
+<BR>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+       Mark the message as "unread", therefore "new".</TD>
+</TR>
+<TR CLASS="TableRowColor">
+<TD WIDTH="1%" VALIGN="top" ALIGN="right"><FONT SIZE="-1"><CODE>&nbsp;</CODE></FONT></TD><TD><CODE><B><A HREF="#move_message(varchar2)">move_message</A></B>(p_target_folder varchar2)</CODE>
+<BR>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+       Moves the message to another mailbox folder; i.e. copies the message and marks it as deleted.
+</TD>
+</TR>
+</TABLE>
+<P></P>
+<A NAME="trigger_summary"></A><A NAME="field_detail"></A>
+<TABLE WIDTH="100%" CELLSPACING="0" CELLPADDING="3" BORDER="1">
+<TR CLASS="TableHeadingColor">
+<TD COLSPAN="1"><FONT SIZE="+2"><B>Field Detail</B></FONT></TD>
+</TR>
+</TABLE>
+<A NAME="msg_number"></A>
+<H3>msg_number</H3>
+<PRE>
+  public number(10) <B>msg_number</B>
+</PRE>
+<DL>
+<DD>A Message object's message number is the relative position of this Message in its Folder. Note that the message number for a particular Message can change during a session if other messages in the Folder are deleted and expunged.
+Valid message numbers start at 1. Messages that do not belong to any folder (like newly composed or derived messages) have 0 as their message number. 
+</DD>
+<DD>
+<DL></DL>
+</DD>
+</DL>
+<HR>
+<A NAME="subject"></A>
+<H3>subject</H3>
+<PRE>
+  public varchar2(4000) <B>subject</B>
+</PRE>
+<DL>
+<DD>Subject of the message
+</DD>
+<DD>
+<DL></DL>
+</DD>
+</DL>
+<HR>
+<A NAME="sender"></A>
+<H3>sender</H3>
+<PRE>
+  public varchar2(100) <B>sender</B>
+</PRE>
+<DL>
+<DD>Sender name of the message
+</DD>
+<DD>
+<DL></DL>
+</DD>
+</DL>
+<HR>
+<A NAME="sender_email"></A>
+<H3>sender_email</H3>
+<PRE>
+  public varchar2(100) <B>sender_email</B>
+</PRE>
+<DL>
+<DD>Sender email of the message
+</DD>
+<DD>
+<DL></DL>
+</DD>
+</DL>
+<HR>
+<A NAME="sent_date"></A>
+<H3>sent_date</H3>
+<PRE>
+  public date <B>sent_date</B>
+</PRE>
+<DL>
+<DD>Date on which the message was sent.
+</DD>
+<DD>
+<DL></DL>
+</DD>
+</DL>
+<HR>
+<A NAME="deleted"></A>
+<H3>deleted</H3>
+<PRE>
+  public char(1) <B>deleted</B>
+</PRE>
+<DL>
+<DD>Indicates whether the message is marked as "deleted".
+</DD>
+<DD>
+<DL></DL>
+</DD>
+</DL>
+<HR>
+<A NAME="read"></A>
+<H3>read</H3>
+<PRE>
+  public char(1) <B>read</B>
+</PRE>
+<DL>
+<DD>Indicates whether the message is marked as "read".
+</DD>
+<DD>
+<DL></DL>
+</DD>
+</DL>
+<HR>
+<A NAME="recent"></A>
+<H3>recent</H3>
+<PRE>
+  public char(1) <B>recent</B>
+</PRE>
+<DL>
+<DD>Indicates whether the message is marked as "recent".
+</DD>
+<DD>
+<DL></DL>
+</DD>
+</DL>
+<HR>
+<A NAME="answered"></A>
+<H3>answered</H3>
+<PRE>
+  public char(1) <B>answered</B>
+</PRE>
+<DL>
+<DD>Indicates whether the message is marked as "answered".
+</DD>
+<DD>
+<DL></DL>
+</DD>
+</DL>
+<HR>
+<A NAME="content_type"></A>
+<H3>content_type</H3>
+<PRE>
+  public varchar2(100) <B>content_type</B>
+</PRE>
+<DL>
+<DD>Content Type of the message.
+</DD>
+<DD>
+<DL></DL>
+</DD>
+</DL>
+<HR>
+<A NAME="message_size"></A>
+<H3>message_size</H3>
+<PRE>
+  public number <B>message_size</B>
+</PRE>
+<DL>
+<DD>Message size in bytes.
+</DD>
+<DD>
+<DL></DL>
+</DD>
+</DL>
+<HR>
+<A NAME="type_detail"></A><A NAME="method_detail"></A>
+<TABLE WIDTH="100%" CELLSPACING="0" CELLPADDING="3" BORDER="1">
+<TR CLASS="TableHeadingColor">
+<TD COLSPAN="1"><FONT SIZE="+2"><B>Method Detail</B></FONT></TD>
+</TR>
+</TABLE>
+<A NAME="get_simple_content_varchar2"></A>
+<H3>get_simple_content_varchar2</H3>
+<PRE>public varchar2 <B>get_simple_content_varchar2</B>()</PRE>
+<DL>
+<DD> Retrieves the content of a simple text message as VARCHAR2.
+ Throws an exception when the content is too big.
+</DD>
+<DD>
+<DL>
+<DT>Returns:
+          <DD>The message content, if it is a "text/plain" message, NULL otherwise.</DD>
+</DT>
+</DL>
+</DD>
+<P></P>
+<DL></DL>
+</DL>
+<HR>
+<A NAME="get_simple_content_clob"></A>
+<H3>get_simple_content_clob</H3>
+<PRE>public clob <B>get_simple_content_clob</B>()</PRE>
+<DL>
+<DD> Retrieves the content of a simple text message as a CLOB. The function creates a temporary LOB for this - this
+ might has to be freed with DBMS_LOB.FREETEMPORARY after usage.
+</DD>
+<DD>
+<DL>
+<DT>Returns:
+          <DD>The message content, if it is a "text/plain" message, NULL otherwise.</DD>
+</DT>
+</DL>
+</DD>
+<P></P>
+<DL></DL>
+</DL>
+<HR>
+<A NAME="get_content_varchar2"></A>
+<H3>get_content_varchar2</H3>
+<PRE>public varchar2 <B>get_content_varchar2</B>()</PRE>
+<DL>
+<DD> Tries to retrieve the text content of simple or multipart messages as <b>VARCHAR2</b>. If the
+ message is a multipart message the function looks in the first two body parts and
+ returns the first body part which is a text. Throws an exception when the
+ returned text is too big for VARCHAR2.
+</DD>
+<DD>
+<DL>
+<DT>Returns:
+          <DD>The message content, if one of the first two body parts is "text/plain", NULL otherwise.</DD>
+</DT>
+</DL>
+</DD>
+<P></P>
+<DL></DL>
+</DL>
+<HR>
+<A NAME="get_content_clob"></A>
+<H3>get_content_clob</H3>
+<PRE>public clob <B>get_content_clob</B>()</PRE>
+<DL>
+<DD> Tries to retrieve the text content of simple or multipart messages as a <b>CLOB</b>. If the
+ message is a multipart message the function looks in the first two body parts and
+ returns the first body part which is a text.
+</DD>
+<DD>
+<DL>
+<DT>Returns:
+          <DD>The message content, if one of the first two body parts is "text/plain", NULL otherwise.</DD>
+</DT>
+</DL>
+</DD>
+<P></P>
+<DL></DL>
+</DL>
+<HR>
+<A NAME="get_bodypart_content_varchar2(varchar2)"></A>
+<H3>get_bodypart_content_varchar2</H3>
+<PRE>public varchar2 <B>get_bodypart_content_varchar2</B>(p_partindexes varchar2)</PRE>
+<DL>
+<DD> Returns the content of the messages' body part as VARCHAR2. Throws an exception, if ...
+ <ul>
+ <li>the content is too big for a VARCHAR2 ariable</li>
+ <li>the body part has binary content (e.g. images)</li>
+ <li>the body part is itself a multipart object with child parts</li>
+ </ul>
+</DD>
+<DD>
+<DL>
+<DT>Parameters:
+        <DD>
+<CODE>p_partindexes</CODE> -
+              the identifier for the selected body part - can be determined with the <b>get_structure</b> function.</DD>
+</DT>
+<DT>Returns:
+          <DD>the body part content as VARCHAR2.</DD>
+</DT>
+</DL>
+</DD>
+<P></P>
+<DL></DL>
+</DL>
+<HR>
+<A NAME="get_bodypart_content_clob(varchar2)"></A>
+<H3>get_bodypart_content_clob</H3>
+<PRE>public clob <B>get_bodypart_content_clob</B>(p_partindexes varchar2)</PRE>
+<DL>
+<DD> Returns the content of the messages' body part as CLOB. Throws an exception, if ...
+ <ul>
+ <li>the body part has binary content (e.g. images)</li>
+ <li>the body part is itself a multipart object with child parts</li>
+ </ul>
+</DD>
+<DD>
+<DL>
+<DT>Parameters:
+        <DD>
+<CODE>p_partindexes</CODE> -
+              the identifier for the selected body part - can be determined with the <b>get_structure</b> function.</DD>
+</DT>
+<DT>Returns:
+          <DD>the body part content as CLOB.</DD>
+</DT>
+</DL>
+</DD>
+<P></P>
+<DL></DL>
+</DL>
+<HR>
+<A NAME="get_bodypart_content_blob(varchar2)"></A>
+<H3>get_bodypart_content_blob</H3>
+<PRE>public blob <B>get_bodypart_content_blob</B>(p_partindexes varchar2)</PRE>
+<DL>
+<DD> Returns the content of the messages' body part as BLOB.
+</DD>
+<DD>
+<DL>
+<DT>Parameters:
+        <DD>
+<CODE>p_partindexes</CODE> -
+              the identifier for the selected body part - can be determined with the <b>get_structure</b> function.</DD>
+</DT>
+<DT>Returns:
+          <DD>the body part content as BLOB.</DD>
+</DT>
+</DL>
+</DD>
+<P></P>
+<DL></DL>
+</DL>
+<HR>
+<A NAME="get_content_type"></A>
+<H3>get_content_type</H3>
+<PRE>public varchar2 <B>get_content_type</B>()</PRE>
+<DL>
+<DD> Returns the messages' content type
+</DD>
+<DD>
+<DL>
+<DT>Returns:
+          <DD>The messages' content type e.g. "text/plain", "text/html" or "multipart/ALTERNATIVE"</DD>
+</DT>
+</DL>
+</DD>
+<P></P>
+<DL></DL>
+</DL>
+<HR>
+<A NAME="get_priority"></A>
+<H3>get_priority</H3>
+<PRE>public varchar2 <B>get_priority</B>()</PRE>
+<DL>
+<DD> Returns the messages' priority flag
+</DD>
+<DD>
+<DL>
+<DT>Returns:
+          <DD>The messages' priority flag (Normal, High, Highest)</DD>
+</DT>
+</DL>
+</DD>
+<P></P>
+<DL></DL>
+</DL>
+<HR>
+<A NAME="get_bodypart_content_type(varchar2)"></A>
+<H3>get_bodypart_content_type</H3>
+<PRE>public varchar2 <B>get_bodypart_content_type</B>(p_partindexes varchar2)</PRE>
+<DL>
+<DD> Returns the messages' content type
+</DD>
+<DD>
+<DL>
+<DT>Returns:
+          <DD>The messages' content type e.g. "text/plain", "text/html" or "multipart/ALTERNATIVE"</DD>
+</DT>
+</DL>
+</DD>
+<P></P>
+<DL></DL>
+</DL>
+<HR>
+<A NAME="get_multipart_count"></A>
+<H3>get_multipart_count</H3>
+<PRE>public number <B>get_multipart_count</B>()</PRE>
+<DL>
+<DD> Returns for multipart messages the content type of a specific body part.
+</DD>
+<DD>
+<DL>
+<DT>Returns:
+          <DD>The body parts content type e.g. "text/plain", "text/html" or others.</DD>
+</DT>
+</DL>
+</DD>
+<P></P>
+<DL></DL>
+</DL>
+<HR>
+<A NAME="get_bodypart_multipart_count(varchar2)"></A>
+<H3>get_bodypart_multipart_count</H3>
+<PRE>public number <B>get_bodypart_multipart_count</B>(p_partindexes varchar2)</PRE>
+<DL>
+<DD> Returns for a messages' body part (which is of type "multipart") the number of child body parts.
+</DD>
+<DD>
+<DL>
+<DT>Parameters:
+        <DD>
+<CODE>p_partindexes</CODE> -
+              the identifier for the selected body part - can be determined with the <b>get_structure</b> function.</DD>
+</DT>
+<DT>Returns:
+          <DD>the number of child body parts.</DD>
+</DT>
+</DL>
+</DD>
+<P></P>
+<DL></DL>
+</DL>
+<HR>
+<A NAME="get_structure"></A>
+<H3>get_structure</H3>
+<PRE>public mail_part_t <B>get_structure</B>()</PRE>
+<DL>
+<DD> Returns (for multipart messages) the information about the contained body part hierarchy
+ as <i>table of MAIL_PART_T</i>.
+ <pre>
+ SELECT * FROM TABLE(MAIL_CLIENT.GET_MESSAGE([<i>msgnum</i>]).GET_STRUCTURE())
+ </pre>
+ Example:
+ <pre>
+ PARTINDEX  CONTENT_TYPE                   CONTENT_DISPOSITION   PART_SIZE
+ ---------- ------------------------------ -------------------- ----------
+ 0          TEXT/PLAIN                                                 330
+ 1          multipart/RELATED                                           -1
+ 1,0        TEXT/HTML                                                  668
+ 1,1        IMAGE/JPEG                     INLINE                    10122
+ </pre>
+ The <b>PARTINDEX</b> column contains the identifier for a specific body part.
+</DD>
+<DD>
+<DL>
+<DT>Returns:
+          <DD>The message body part hierarchy</DD>
+</DT>
+</DL>
+</DD>
+<P></P>
+<DL></DL>
+</DL>
+<HR>
+<A NAME="mark_read"></A>
+<H3>mark_read</H3>
+<PRE>public  <B>mark_read</B>()</PRE>
+<DL>
+<DD> Mark the message as "read".
+</DD>
+<DD>
+<DL></DL>
+</DD>
+<P></P>
+<DL></DL>
+</DL>
+<HR>
+<A NAME="mark_unread"></A>
+<H3>mark_unread</H3>
+<PRE>public  <B>mark_unread</B>()</PRE>
+<DL>
+<DD> Mark the message as "unread", therefore "new".
+</DD>
+<DD>
+<DL></DL>
+</DD>
+<P></P>
+<DL></DL>
+</DL>
+<HR>
+<A NAME="mark_deleted"></A>
+<H3>mark_deleted</H3>
+<PRE>public  <B>mark_deleted</B>()</PRE>
+<DL>
+<DD> Mark the message as "deleted". Messages marked as "deleted" will be removed in
+ the next "expunge" operation of the mailbox folder.
+</DD>
+<DD>
+<DL></DL>
+</DD>
+<P></P>
+<DL></DL>
+</DL>
+<HR>
+<A NAME="mark_undeleted"></A>
+<H3>mark_undeleted</H3>
+<PRE>public  <B>mark_undeleted</B>()</PRE>
+<DL>
+<DD> Removed the "deleted" mark from the message.
+</DD>
+<DD>
+<DL></DL>
+</DD>
+<P></P>
+<DL></DL>
+</DL>
+<HR>
+<A NAME="get_headers(varchar2)"></A>
+<H3>get_headers</H3>
+<PRE>public mail_header_t <B>get_headers</B>(p_partindexes varchar2)</PRE>
+<DL>
+<DD> Lists all email headers of the specified body part.
+</DD>
+<DD>
+<DL>
+<DT>Parameters:
+        <DD>
+<CODE>p_partindexes</CODE> -
+              the identifier for the selected body part - can be determined with the <b>get_structure</b> function.</DD>
+</DT>
+<DT>Returns:
+          <DD>the headers of the specified body part as <i>table of MAIL_HEADER_T</i>.</DD>
+</DT>
+</DL>
+</DD>
+<P></P>
+<DL></DL>
+</DL>
+<HR>
+<A NAME="get_headers"></A>
+<H3>get_headers</H3>
+<PRE>public mail_header_t <B>get_headers</B>()</PRE>
+<DL>
+<DD> Lists all message headers
+</DD>
+<DD>
+<DL>
+<DT>Returns:
+          <DD>the message headers as <i>table of MAIL_HEADER_T</i>.
+ <pre>
+ SELECT * FROM TABLE(MAIL_CLIENT.GET_MESSAGE([<i>msgnum</i>]).GET_HEADERS())
+ </pre></DD>
+</DT>
+</DL>
+</DD>
+<P></P>
+<DL></DL>
+</DL>
+<HR>
+<A NAME="get_size(varchar2)"></A>
+<H3>get_size</H3>
+<PRE>public number <B>get_size</B>(p_partindexes varchar2)</PRE>
+<DL>
+<DD> Returns the size of the specified body part in bytes.
+</DD>
+<DD>
+<DL>
+<DT>Parameters:
+        <DD>
+<CODE>p_partindexes</CODE> -
+              the identifier for the selected body part - can be determined with the <b>get_structure</b> function.</DD>
+</DT>
+<DT>Returns:
+          <DD>the size of the specified body part in bytes.</DD>
+</DT>
+</DL>
+</DD>
+<P></P>
+<DL></DL>
+</DL>
+<HR>
+<A NAME="get_size"></A>
+<H3>get_size</H3>
+<PRE>public number <B>get_size</B>()</PRE>
+<DL>
+<DD> Returns the size of the whole message in bytes.
+</DD>
+<DD>
+<DL>
+<DT>Returns:
+          <DD>the size of the message in bytes.</DD>
+</DT>
+</DL>
+</DD>
+<P></P>
+<DL></DL>
+</DL>
+<HR>
+<A NAME="dump_clob"></A>
+<H3>dump_clob</H3>
+<PRE>public clob <B>dump_clob</B>()</PRE>
+<DL>
+<DD> Dumps the message "as it is"; i.e. does not interpret the message strcuture.
+</DD>
+<DD>
+<DL>
+<DT>Returns:
+          <DD>message dump as a CLOB</DD>
+</DT>
+</DL>
+</DD>
+<P></P>
+<DL></DL>
+</DL>
+<HR>
+<A NAME="dump_blob"></A>
+<H3>dump_blob</H3>
+<PRE>public blob <B>dump_blob</B>()</PRE>
+<DL>
+<DD> Dumps the message "as it is"; i.e. does not interpret the message strcuture.
+</DD>
+<DD>
+<DL>
+<DT>Returns:
+          <DD>message dump as a BLOB</DD>
+</DT>
+</DL>
+</DD>
+<P></P>
+<DL></DL>
+</DL>
+<HR>
+<A NAME="copy_message(varchar2)"></A>
+<H3>copy_message</H3>
+<PRE>public  <B>copy_message</B>(p_target_folder varchar2)</PRE>
+<DL>
+<DD> Copies the message to another mailbox folder.
+</DD>
+<DD>
+<DL>
+<DT>Parameters:
+        <DD>
+<CODE>p_target_folder</CODE> -
+              the absolute path of the target folder</DD>
+</DT>
+</DL>
+</DD>
+<P></P>
+<DL></DL>
+</DL>
+<HR>
+<A NAME="move_message(varchar2)"></A>
+<H3>move_message</H3>
+<PRE>public  <B>move_message</B>(p_target_folder varchar2)</PRE>
+<DL>
+<DD> Moves the message to another mailbox folder; i.e. copies the message and marks it as deleted.
+</DD>
+<DD>
+<DL>
+<DT>Parameters:
+        <DD>
+<CODE>p_target_folder</CODE> -
+              the absolute path of the target folder</DD>
+</DT>
+</DL>
+</DD>
+<P></P>
+<DL></DL>
+</DL>
+<HR>
+<A NAME="get_uid"></A>
+<H3>get_uid</H3>
+<PRE>public varchar2 <B>get_uid</B>()</PRE>
+<DL>
+<DD> Returns the message UID (if available)
+</DD>
+<DD>
+<DL>
+<DT>Returns:
+          <DD>the message UID, null of not available</DD>
+</DT>
+</DL>
+</DD>
+<P></P>
+<DL></DL>
+</DL>
+<HR>
+<A NAME="get_receivedate"></A>
+<H3>get_receivedate</H3>
+<PRE>public date <B>get_receivedate</B>()</PRE>
+<DL>
+<DD> Returns the datetime at which the message has been received by the mail server.
+</DD>
+<DD>
+<DL>
+<DT>Returns:
+          <DD>the receive date of the message</DD>
+</DT>
+</DL>
+</DD>
+<P></P>
+<DL></DL>
+</DL>
+<HR>
+<A NAME="get_recipients"></A>
+<H3>get_recipients</H3>
+<PRE>public mail_addr_t <B>get_recipients</B>()</PRE>
+<DL>
+<DD> Returns all message recipients as table of MAIL_ADDR_T
+</DD>
+<DD>
+<DL>
+<DT>Returns:
+          <DD>table containing all message recipients (TO and CC)</DD>
+</DT>
+</DL>
+</DD>
+<P></P>
+<DL></DL>
+</DL>
+<HR>
+<A NAME="trigger_detail"></A>
+<TABLE CELLSPACING="0" CELLPADDING="1" WIDTH="100%" BORDER="0">
+<TR>
+<TD CLASS="NavBarRow1" COLSPAN="2">
+<TABLE CELLSPACING="3" CELLPADDING="0" BORDER="0">
+<TR VALIGN="top" ALIGN="center">
+<TD CLASS="NavBarRow1"><A HREF="summary.html"><FONT CLASS="NavBarFont1"><B>Overview</B></FONT></A> &nbsp;</TD><TD CLASS="NavBarRow1"><A HREF="deprecated-list.html"><FONT CLASS="NavBarFont1"><B>Deprecated</B></FONT></A> &nbsp;</TD><TD CLASS="NavBarRow1"><A HREF="index-list.html"><FONT CLASS="NavBarFont1"><B>Index</B></FONT></A> &nbsp;</TD><TD CLASS="NavBarRow1"><A HREF="generator.html"><FONT CLASS="NavBarFont1"><B>Generator</B></FONT></A> &nbsp;</TD>
+</TR>
+</TABLE>
+</TD><TD rowspan="3" VALIGN="top" ALIGN="right"><EM><b>PL/SQL Email Client</b></EM></TD>
+</TR>
+<TR>
+<TD CLASS="NavBarRow3" VALIGN="top"><FONT SIZE="-2">
+      SUMMARY:  <A HREF="#field_summary">FIELD</A> | <A HREF="#type_summary">TYPE</A> | <A HREF="#method_summary">METHOD</A></FONT></TD><TD CLASS="NavBarRow3" VALIGN="top"><FONT SIZE="-2">
+    DETAIL:  <A HREF="#field_detail">FIELD</A> | <A HREF="#type_detail">TYPE</A> | <A HREF="#method_detail">METHOD</A></FONT></TD>
+</TR>
+</TABLE>
+<HR>
+</BODY>
+</HTML>

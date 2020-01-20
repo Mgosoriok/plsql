@@ -1,0 +1,75 @@
+* FAQ: Frequently Asked Questions
+*
+*  1. How is the "PL/SQL email client" to be installed?
+*  
+*     Run the "install.sql" script while being connected as the user you want to
+*     be the owner of the package. If you want to make the functionality available
+*     to all database users, run "grantPublic.sql" additionally.
+*     Use SQL*PLUS!
+* 
+*  2. Does this package run on OracleXE?
+*     No. This package depends on the Oracle Database Java Engine; and OracleXE comes without it.
+*
+*  3. What could be the reason for Java error messages when running "install.sql"?
+*   
+*     a) Installation with Utilities like TOAD, SQL Developer or others lead to problems. 
+*        Use only SQL*Plus. 
+*     b) Make sure, that the Java Mail API is has not been replaced with an older or different
+*        version than Oracle's
+*
+*  4. Which network privileges does the package require?
+* 
+*     The database schema which owns the code and all users who use the Email Package, need Java Network Privileges
+*     in order to connect to the mail server. A user with DBA privileges must grant these
+*     by calling DBMS_JAVA.GRANT_PERMISSION as follows.
+*     begin
+*      dbms_java.grant_permission(
+*       grantee           => '[dbuser]',
+*       permission_type   => 'SYS:java.net.SocketPermission',
+*       permission_name   => '[mailserver.yourcompany.yourdomain]',
+*       permission_action => 'connect,resolve'
+*      );
+*     end;
+*
+*     When you install the package as a non-administrative user on a 12c database, you also need the execute
+*     the following DBMS_JAVA.GRANT_PERMISSION call.
+*
+*     begin  
+*      dbms_java.grant_permission(
+*       grantee           => '[dbuser]',
+*       permission_type   => 'SYS:java.lang.RuntimePermission',
+*       permission_name   => 'setFactory',
+*       permission_action => ''
+*      );   
+*     end;
+*     /
+*
+*  5. When connecting to the mail server with SSL, I get a "no trusted certificate found" error message
+*     like "sun.security.validator.ValidatorException: No trusted certificate found;"   
+*
+*     Your mail server uses a certificate which was signed by a CA not known to the Oracle database - 
+*     therefore the mail servers' certificate cannot be validated. You need to add the CA's "root certificate"
+*     to your Oracle database - see MyOracleSupport Note 443438.1 for more information.
+*
+*  6. I which database versions does the Email client run?
+* 
+*     You need at least Oracle 10.2. Oracle 10.1 or older is not supported.
+* 
+*  7. I get the following error message on 12.1.0.1 when trying an SSL connection
+*     ORA-29532: Java-Aufruf durch nicht abgefangene Java-Exception beendet:
+*     javax.net.ssl.SSLException: java.lang.RuntimeException: Unexpected error:
+*     java.security.InvalidAlgorithmParameterException: the trustAnchors parameter
+*     must be non-empty
+*
+*     The very first 12.1.0.1 versions contain corrupted SSL root certificates - so Java
+*     SSL connections do not work. Until fixed by Oracle, you can use the following
+*     workaround:
+*     -> Take a copy of the existing "cacerts" file of the Oracle JVM
+*        # cp $ORACLE_HOME/javavm/jdk/jdk6/lib/security/cacerts $ORACLE_HOME/javavm/jdk/jdk6/lib/security/cacerts-orig
+* 
+*     -> Copy the "cacerts" file from a standard JDK6 or JRE6 installation (outside the database) to
+*        the location of the original "cacerts" file
+*        # cp $JDK6_OR_JRE6_HOME/lib/security/cacerts $ORACLE_HOME/javavm/jdk/jdk6/lib/security/cacerts
+*     
+*     -> Restart your database session.
+* 

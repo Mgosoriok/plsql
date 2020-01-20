@@ -1,0 +1,1251 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE APPLICATION SYSTEM "application.dtd">
+<APPLICATION NAME="PL/SQL Email Client">
+<PACKAGE NAME="mail_part_t" SCHEMA="">
+<VARIABLE NAME="partindex">
+<COMMENT_FIRST_LINE><![CDATA[Identifier for this body part for usage in the <b>MAIL_T</b> methods.]]></COMMENT_FIRST_LINE>
+<COMMENT><![CDATA[Identifier for this body part for usage in the <b>MAIL_T</b> methods.
+]]></COMMENT>
+<RETURN TYPE="varchar2(100)"/>
+</VARIABLE>
+<VARIABLE NAME="parent_index">
+<COMMENT_FIRST_LINE><![CDATA[Identifier of the parent body part for usage in the <b>MAIL_T</b> methods.]]></COMMENT_FIRST_LINE>
+<COMMENT><![CDATA[Identifier of the parent body part for usage in the <b>MAIL_T</b> methods.
+]]></COMMENT>
+<RETURN TYPE="varchar2(100)"/>
+</VARIABLE>
+<VARIABLE NAME="content_type">
+<COMMENT_FIRST_LINE><![CDATA[Content type of this body part.]]></COMMENT_FIRST_LINE>
+<COMMENT><![CDATA[Content type of this body part.
+]]></COMMENT>
+<RETURN TYPE="varchar2(100)"/>
+</VARIABLE>
+<VARIABLE NAME="content_disposition">
+<COMMENT_FIRST_LINE><![CDATA[Content disposition (INLINE or ATTACHMENT) of this body part.]]></COMMENT_FIRST_LINE>
+<COMMENT><![CDATA[Content disposition (INLINE or ATTACHMENT) of this body part.
+]]></COMMENT>
+<RETURN TYPE="varchar2(100)"/>
+</VARIABLE>
+<VARIABLE NAME="part_size">
+<COMMENT_FIRST_LINE><![CDATA[Size (in bytes) of this body part.]]></COMMENT_FIRST_LINE>
+<COMMENT><![CDATA[Size (in bytes) of this body part.
+]]></COMMENT>
+<RETURN TYPE="number"/>
+</VARIABLE>
+<VARIABLE NAME="child_count">
+<COMMENT_FIRST_LINE><![CDATA[For body parts (which are multipart objects): the number of child body part objects.]]></COMMENT_FIRST_LINE>
+<COMMENT><![CDATA[For body parts (which are multipart objects): the number of child body part objects.
+]]></COMMENT>
+<RETURN TYPE="number"/>
+</VARIABLE>
+</PACKAGE>
+<PACKAGE NAME="mail_header_t" SCHEMA="">
+<VARIABLE NAME="name">
+<COMMENT_FIRST_LINE><![CDATA[Name of the header field
+]]></COMMENT_FIRST_LINE>
+<COMMENT><![CDATA[Name of the header field
+]]></COMMENT>
+<RETURN TYPE="varchar2(4000)"/>
+</VARIABLE>
+<VARIABLE NAME="value">
+<COMMENT_FIRST_LINE><![CDATA[Value of the header field
+]]></COMMENT_FIRST_LINE>
+<COMMENT><![CDATA[Value of the header field
+]]></COMMENT>
+<RETURN TYPE="varchar2(4000)"/>
+</VARIABLE>
+</PACKAGE>
+<PACKAGE NAME="mail_addr_t" SCHEMA="">
+<VARIABLE NAME="rcpt_type">
+<COMMENT_FIRST_LINE><![CDATA[ Recipient type ("TO" or "CC")
+]]></COMMENT_FIRST_LINE>
+<COMMENT><![CDATA[ Recipient type ("TO" or "CC")
+]]></COMMENT>
+<RETURN TYPE="varchar2(8)"/>
+</VARIABLE>
+<VARIABLE NAME="rcpt_name">
+<COMMENT_FIRST_LINE><![CDATA[ Recipient name (clear text)
+]]></COMMENT_FIRST_LINE>
+<COMMENT><![CDATA[ Recipient name (clear text)
+]]></COMMENT>
+<RETURN TYPE="varchar2(500)"/>
+</VARIABLE>
+<VARIABLE NAME="rcpt_address">
+<COMMENT_FIRST_LINE><![CDATA[ Recipients email address
+]]></COMMENT_FIRST_LINE>
+<COMMENT><![CDATA[ Recipients email address
+]]></COMMENT>
+<RETURN TYPE="varchar2(500)"/>
+</VARIABLE>
+</PACKAGE>
+<PACKAGE NAME="mail_t" SCHEMA="">
+<COMMENT><![CDATA[ The object type <b>MAIL_T</b> represents a message in the mailbox folder. A <b>MAIL_T</b>
+ object is obtained either by the <b>MAIL_CLIENT</b>.<b>GET_MESSAGE</b> ...
+ functions.
+ <pre>
+ SELECT MAIL_CLIENT.GET_MESSAGE([<i>msgnum</i>]) FROM DUAL
+ </pre> ... or <b>MAIL_CLIENT.GET_MAIL_HEADERS</b> ...
+ <pre>
+ SELECT VALUE(o) MAIL_OBJECT FROM TABLE(MAIL_CLIENT.GET_MAIL_HEADERS())
+ </pre>
+]]></COMMENT>
+<VARIABLE NAME="msg_number">
+<COMMENT_FIRST_LINE><![CDATA[A Message object's message number is the relative position of this Message in its Folder.]]></COMMENT_FIRST_LINE>
+<COMMENT><![CDATA[A Message object's message number is the relative position of this Message in its Folder. Note that the message number for a particular Message can change during a session if other messages in the Folder are deleted and expunged.
+Valid message numbers start at 1. Messages that do not belong to any folder (like newly composed or derived messages) have 0 as their message number. 
+]]></COMMENT>
+<RETURN TYPE="number(10)"/>
+</VARIABLE>
+<VARIABLE NAME="subject">
+<COMMENT_FIRST_LINE><![CDATA[Subject of the message
+]]></COMMENT_FIRST_LINE>
+<COMMENT><![CDATA[Subject of the message
+]]></COMMENT>
+<RETURN TYPE="varchar2(4000)"/>
+</VARIABLE>
+<VARIABLE NAME="sender">
+<COMMENT_FIRST_LINE><![CDATA[Sender name of the message
+]]></COMMENT_FIRST_LINE>
+<COMMENT><![CDATA[Sender name of the message
+]]></COMMENT>
+<RETURN TYPE="varchar2(100)"/>
+</VARIABLE>
+<VARIABLE NAME="sender_email">
+<COMMENT_FIRST_LINE><![CDATA[Sender email of the message
+]]></COMMENT_FIRST_LINE>
+<COMMENT><![CDATA[Sender email of the message
+]]></COMMENT>
+<RETURN TYPE="varchar2(100)"/>
+</VARIABLE>
+<VARIABLE NAME="sent_date">
+<COMMENT_FIRST_LINE><![CDATA[Date on which the message was sent.]]></COMMENT_FIRST_LINE>
+<COMMENT><![CDATA[Date on which the message was sent.
+]]></COMMENT>
+<RETURN TYPE="date"/>
+</VARIABLE>
+<VARIABLE NAME="deleted">
+<COMMENT_FIRST_LINE><![CDATA[Indicates whether the message is marked as "deleted".]]></COMMENT_FIRST_LINE>
+<COMMENT><![CDATA[Indicates whether the message is marked as "deleted".
+]]></COMMENT>
+<RETURN TYPE="char(1)"/>
+</VARIABLE>
+<VARIABLE NAME="read">
+<COMMENT_FIRST_LINE><![CDATA[Indicates whether the message is marked as "read".]]></COMMENT_FIRST_LINE>
+<COMMENT><![CDATA[Indicates whether the message is marked as "read".
+]]></COMMENT>
+<RETURN TYPE="char(1)"/>
+</VARIABLE>
+<VARIABLE NAME="recent">
+<COMMENT_FIRST_LINE><![CDATA[Indicates whether the message is marked as "recent".]]></COMMENT_FIRST_LINE>
+<COMMENT><![CDATA[Indicates whether the message is marked as "recent".
+]]></COMMENT>
+<RETURN TYPE="char(1)"/>
+</VARIABLE>
+<VARIABLE NAME="answered">
+<COMMENT_FIRST_LINE><![CDATA[Indicates whether the message is marked as "answered".]]></COMMENT_FIRST_LINE>
+<COMMENT><![CDATA[Indicates whether the message is marked as "answered".
+]]></COMMENT>
+<RETURN TYPE="char(1)"/>
+</VARIABLE>
+<VARIABLE NAME="content_type">
+<COMMENT_FIRST_LINE><![CDATA[Content Type of the message.]]></COMMENT_FIRST_LINE>
+<COMMENT><![CDATA[Content Type of the message.
+]]></COMMENT>
+<RETURN TYPE="varchar2(100)"/>
+</VARIABLE>
+<VARIABLE NAME="message_size">
+<COMMENT_FIRST_LINE><![CDATA[Message size in bytes.]]></COMMENT_FIRST_LINE>
+<COMMENT><![CDATA[Message size in bytes.
+]]></COMMENT>
+<RETURN TYPE="number"/>
+</VARIABLE>
+<FUNCTION NAME="get_simple_content_varchar2">
+<COMMENT_FIRST_LINE><![CDATA[ Retrieves the content of a simple text message as VARCHAR2.]]></COMMENT_FIRST_LINE>
+<COMMENT><![CDATA[ Retrieves the content of a simple text message as VARCHAR2.
+ Throws an exception when the content is too big.
+]]></COMMENT>
+<RETURN TYPE="varchar2">
+<COMMENT><![CDATA[The message content, if it is a "text/plain" message, NULL otherwise.]]></COMMENT>
+</RETURN>
+<TAG TYPE="@return">
+<COMMENT><![CDATA[The message content, if it is a "text/plain" message, NULL otherwise.]]></COMMENT>
+</TAG>
+</FUNCTION>
+<FUNCTION NAME="get_simple_content_clob">
+<COMMENT_FIRST_LINE><![CDATA[ Retrieves the content of a simple text message as a CLOB.]]></COMMENT_FIRST_LINE>
+<COMMENT><![CDATA[ Retrieves the content of a simple text message as a CLOB. The function creates a temporary LOB for this - this
+ might has to be freed with DBMS_LOB.FREETEMPORARY after usage.
+]]></COMMENT>
+<RETURN TYPE="clob">
+<COMMENT><![CDATA[The message content, if it is a "text/plain" message, NULL otherwise.]]></COMMENT>
+</RETURN>
+<TAG TYPE="@return">
+<COMMENT><![CDATA[The message content, if it is a "text/plain" message, NULL otherwise.]]></COMMENT>
+</TAG>
+</FUNCTION>
+<FUNCTION NAME="get_content_varchar2">
+<COMMENT_FIRST_LINE><![CDATA[ Tries to retrieve the text content of simple or multipart messages as <b>VARCHAR2</b>.]]></COMMENT_FIRST_LINE>
+<COMMENT><![CDATA[ Tries to retrieve the text content of simple or multipart messages as <b>VARCHAR2</b>. If the
+ message is a multipart message the function looks in the first two body parts and
+ returns the first body part which is a text. Throws an exception when the
+ returned text is too big for VARCHAR2.
+]]></COMMENT>
+<RETURN TYPE="varchar2">
+<COMMENT><![CDATA[The message content, if one of the first two body parts is "text/plain", NULL otherwise.]]></COMMENT>
+</RETURN>
+<TAG TYPE="@return">
+<COMMENT><![CDATA[The message content, if one of the first two body parts is "text/plain", NULL otherwise.]]></COMMENT>
+</TAG>
+</FUNCTION>
+<FUNCTION NAME="get_content_clob">
+<COMMENT_FIRST_LINE><![CDATA[ Tries to retrieve the text content of simple or multipart messages as a <b>CLOB</b>.]]></COMMENT_FIRST_LINE>
+<COMMENT><![CDATA[ Tries to retrieve the text content of simple or multipart messages as a <b>CLOB</b>. If the
+ message is a multipart message the function looks in the first two body parts and
+ returns the first body part which is a text.
+]]></COMMENT>
+<RETURN TYPE="clob">
+<COMMENT><![CDATA[The message content, if one of the first two body parts is "text/plain", NULL otherwise.]]></COMMENT>
+</RETURN>
+<TAG TYPE="@return">
+<COMMENT><![CDATA[The message content, if one of the first two body parts is "text/plain", NULL otherwise.]]></COMMENT>
+</TAG>
+</FUNCTION>
+<FUNCTION NAME="get_bodypart_content_varchar2">
+<COMMENT_FIRST_LINE><![CDATA[ Returns the content of the messages' body part as VARCHAR2.]]></COMMENT_FIRST_LINE>
+<COMMENT><![CDATA[ Returns the content of the messages' body part as VARCHAR2. Throws an exception, if ...
+ <ul>
+ <li>the content is too big for a VARCHAR2 ariable</li>
+ <li>the body part has binary content (e.g. images)</li>
+ <li>the body part is itself a multipart object with child parts</li>
+ </ul>
+]]></COMMENT>
+<ARGUMENT DEFAULT="" MODE="" NAME="p_partindexes" TYPE="varchar2">
+<COMMENT><![CDATA[the identifier for the selected body part - can be determined with the <b>get_structure</b> function.]]></COMMENT>
+</ARGUMENT>
+<RETURN TYPE="varchar2">
+<COMMENT><![CDATA[the body part content as VARCHAR2.]]></COMMENT>
+</RETURN>
+<TAG TYPE="@param">
+<COMMENT><![CDATA[p_partindexes the identifier for the selected body part - can be determined with the <b>get_structure</b> function.]]></COMMENT>
+</TAG>
+<TAG TYPE="@return">
+<COMMENT><![CDATA[the body part content as VARCHAR2.]]></COMMENT>
+</TAG>
+</FUNCTION>
+<FUNCTION NAME="get_bodypart_content_clob">
+<COMMENT_FIRST_LINE><![CDATA[ Returns the content of the messages' body part as CLOB.]]></COMMENT_FIRST_LINE>
+<COMMENT><![CDATA[ Returns the content of the messages' body part as CLOB. Throws an exception, if ...
+ <ul>
+ <li>the body part has binary content (e.g. images)</li>
+ <li>the body part is itself a multipart object with child parts</li>
+ </ul>
+]]></COMMENT>
+<ARGUMENT DEFAULT="" MODE="" NAME="p_partindexes" TYPE="varchar2">
+<COMMENT><![CDATA[the identifier for the selected body part - can be determined with the <b>get_structure</b> function.]]></COMMENT>
+</ARGUMENT>
+<RETURN TYPE="clob">
+<COMMENT><![CDATA[the body part content as CLOB.]]></COMMENT>
+</RETURN>
+<TAG TYPE="@param">
+<COMMENT><![CDATA[p_partindexes the identifier for the selected body part - can be determined with the <b>get_structure</b> function.]]></COMMENT>
+</TAG>
+<TAG TYPE="@return">
+<COMMENT><![CDATA[the body part content as CLOB.]]></COMMENT>
+</TAG>
+</FUNCTION>
+<FUNCTION NAME="get_bodypart_content_blob">
+<COMMENT_FIRST_LINE><![CDATA[ Returns the content of the messages' body part as BLOB.]]></COMMENT_FIRST_LINE>
+<COMMENT><![CDATA[ Returns the content of the messages' body part as BLOB.
+]]></COMMENT>
+<ARGUMENT DEFAULT="" MODE="" NAME="p_partindexes" TYPE="varchar2">
+<COMMENT><![CDATA[the identifier for the selected body part - can be determined with the <b>get_structure</b> function.]]></COMMENT>
+</ARGUMENT>
+<RETURN TYPE="blob">
+<COMMENT><![CDATA[the body part content as BLOB.]]></COMMENT>
+</RETURN>
+<TAG TYPE="@param">
+<COMMENT><![CDATA[p_partindexes the identifier for the selected body part - can be determined with the <b>get_structure</b> function.]]></COMMENT>
+</TAG>
+<TAG TYPE="@return">
+<COMMENT><![CDATA[the body part content as BLOB.]]></COMMENT>
+</TAG>
+</FUNCTION>
+<FUNCTION NAME="get_content_type">
+<COMMENT_FIRST_LINE><![CDATA[ Returns the messages' content type
+]]></COMMENT_FIRST_LINE>
+<COMMENT><![CDATA[ Returns the messages' content type
+]]></COMMENT>
+<RETURN TYPE="varchar2">
+<COMMENT><![CDATA[The messages' content type e.g. "text/plain", "text/html" or "multipart/ALTERNATIVE"]]></COMMENT>
+</RETURN>
+<TAG TYPE="@return">
+<COMMENT><![CDATA[The messages' content type e.g. "text/plain", "text/html" or "multipart/ALTERNATIVE"]]></COMMENT>
+</TAG>
+</FUNCTION>
+<FUNCTION NAME="get_priority">
+<COMMENT_FIRST_LINE><![CDATA[ Returns the messages' priority flag
+]]></COMMENT_FIRST_LINE>
+<COMMENT><![CDATA[ Returns the messages' priority flag
+]]></COMMENT>
+<RETURN TYPE="varchar2">
+<COMMENT><![CDATA[The messages' priority flag (Normal, High, Highest)]]></COMMENT>
+</RETURN>
+<TAG TYPE="@return">
+<COMMENT><![CDATA[The messages' priority flag (Normal, High, Highest)]]></COMMENT>
+</TAG>
+</FUNCTION>
+<FUNCTION NAME="get_bodypart_content_type">
+<COMMENT_FIRST_LINE><![CDATA[ Returns the messages' content type
+]]></COMMENT_FIRST_LINE>
+<COMMENT><![CDATA[ Returns the messages' content type
+]]></COMMENT>
+<ARGUMENT DEFAULT="" MODE="" NAME="p_partindexes" TYPE="varchar2"/>
+<RETURN TYPE="varchar2">
+<COMMENT><![CDATA[The messages' content type e.g. "text/plain", "text/html" or "multipart/ALTERNATIVE"]]></COMMENT>
+</RETURN>
+<TAG TYPE="@return">
+<COMMENT><![CDATA[The messages' content type e.g. "text/plain", "text/html" or "multipart/ALTERNATIVE"]]></COMMENT>
+</TAG>
+</FUNCTION>
+<FUNCTION NAME="get_multipart_count">
+<COMMENT_FIRST_LINE><![CDATA[ Returns for multipart messages the content type of a specific body part.]]></COMMENT_FIRST_LINE>
+<COMMENT><![CDATA[ Returns for multipart messages the content type of a specific body part.
+]]></COMMENT>
+<RETURN TYPE="number">
+<COMMENT><![CDATA[The body parts content type e.g. "text/plain", "text/html" or others.]]></COMMENT>
+</RETURN>
+<TAG TYPE="@param">
+<COMMENT><![CDATA[p_partindexes the identifier for the selected body part - can be determined with the <b>get_structure</b> function.]]></COMMENT>
+</TAG>
+<TAG TYPE="@return">
+<COMMENT><![CDATA[The body parts content type e.g. "text/plain", "text/html" or others.]]></COMMENT>
+</TAG>
+</FUNCTION>
+<FUNCTION NAME="get_bodypart_multipart_count">
+<COMMENT_FIRST_LINE><![CDATA[ Returns for a messages' body part (which is of type "multipart") the number of child body parts.]]></COMMENT_FIRST_LINE>
+<COMMENT><![CDATA[ Returns for a messages' body part (which is of type "multipart") the number of child body parts.
+]]></COMMENT>
+<ARGUMENT DEFAULT="" MODE="" NAME="p_partindexes" TYPE="varchar2">
+<COMMENT><![CDATA[the identifier for the selected body part - can be determined with the <b>get_structure</b> function.]]></COMMENT>
+</ARGUMENT>
+<RETURN TYPE="number">
+<COMMENT><![CDATA[the number of child body parts.]]></COMMENT>
+</RETURN>
+<TAG TYPE="@param">
+<COMMENT><![CDATA[p_partindexes the identifier for the selected body part - can be determined with the <b>get_structure</b> function.]]></COMMENT>
+</TAG>
+<TAG TYPE="@return">
+<COMMENT><![CDATA[the number of child body parts.]]></COMMENT>
+</TAG>
+</FUNCTION>
+<FUNCTION NAME="get_structure">
+<COMMENT_FIRST_LINE><![CDATA[ Returns (for multipart messages) the information about the contained body part hierarchy
+ as <i>table of MAIL_PART_T</i>.]]></COMMENT_FIRST_LINE>
+<COMMENT><![CDATA[ Returns (for multipart messages) the information about the contained body part hierarchy
+ as <i>table of MAIL_PART_T</i>.
+ <pre>
+ SELECT * FROM TABLE(MAIL_CLIENT.GET_MESSAGE([<i>msgnum</i>]).GET_STRUCTURE())
+ </pre>
+ Example:
+ <pre>
+ PARTINDEX  CONTENT_TYPE                   CONTENT_DISPOSITION   PART_SIZE
+ ---------- ------------------------------ -------------------- ----------
+ 0          TEXT/PLAIN                                                 330
+ 1          multipart/RELATED                                           -1
+ 1,0        TEXT/HTML                                                  668
+ 1,1        IMAGE/JPEG                     INLINE                    10122
+ </pre>
+ The <b>PARTINDEX</b> column contains the identifier for a specific body part.
+]]></COMMENT>
+<RETURN TYPE="mail_part_t">
+<COMMENT><![CDATA[The message body part hierarchy]]></COMMENT>
+</RETURN>
+<TAG TYPE="@return">
+<COMMENT><![CDATA[The message body part hierarchy]]></COMMENT>
+</TAG>
+</FUNCTION>
+<PROCEDURE NAME="mark_read">
+<COMMENT_FIRST_LINE><![CDATA[ Mark the message as "read".]]></COMMENT_FIRST_LINE>
+<COMMENT><![CDATA[ Mark the message as "read".
+]]></COMMENT>
+</PROCEDURE>
+<PROCEDURE NAME="mark_unread">
+<COMMENT_FIRST_LINE><![CDATA[ Mark the message as "unread", therefore "new".]]></COMMENT_FIRST_LINE>
+<COMMENT><![CDATA[ Mark the message as "unread", therefore "new".
+]]></COMMENT>
+</PROCEDURE>
+<PROCEDURE NAME="mark_deleted">
+<COMMENT_FIRST_LINE><![CDATA[ Mark the message as "deleted".]]></COMMENT_FIRST_LINE>
+<COMMENT><![CDATA[ Mark the message as "deleted". Messages marked as "deleted" will be removed in
+ the next "expunge" operation of the mailbox folder.
+]]></COMMENT>
+</PROCEDURE>
+<PROCEDURE NAME="mark_undeleted">
+<COMMENT_FIRST_LINE><![CDATA[ Removed the "deleted" mark from the message.]]></COMMENT_FIRST_LINE>
+<COMMENT><![CDATA[ Removed the "deleted" mark from the message.
+]]></COMMENT>
+</PROCEDURE>
+<FUNCTION NAME="get_headers">
+<COMMENT_FIRST_LINE><![CDATA[ Lists all email headers of the specified body part.]]></COMMENT_FIRST_LINE>
+<COMMENT><![CDATA[ Lists all email headers of the specified body part.
+]]></COMMENT>
+<ARGUMENT DEFAULT="" MODE="" NAME="p_partindexes" TYPE="varchar2">
+<COMMENT><![CDATA[the identifier for the selected body part - can be determined with the <b>get_structure</b> function.]]></COMMENT>
+</ARGUMENT>
+<RETURN TYPE="mail_header_t">
+<COMMENT><![CDATA[the headers of the specified body part as <i>table of MAIL_HEADER_T</i>.]]></COMMENT>
+</RETURN>
+<TAG TYPE="@param">
+<COMMENT><![CDATA[p_partindexes the identifier for the selected body part - can be determined with the <b>get_structure</b> function.]]></COMMENT>
+</TAG>
+<TAG TYPE="@return">
+<COMMENT><![CDATA[the headers of the specified body part as <i>table of MAIL_HEADER_T</i>.]]></COMMENT>
+</TAG>
+</FUNCTION>
+<FUNCTION NAME="get_headers">
+<COMMENT_FIRST_LINE><![CDATA[ Lists all message headers
+]]></COMMENT_FIRST_LINE>
+<COMMENT><![CDATA[ Lists all message headers
+]]></COMMENT>
+<RETURN TYPE="mail_header_t">
+<COMMENT><![CDATA[the message headers as <i>table of MAIL_HEADER_T</i>.
+ <pre>
+ SELECT * FROM TABLE(MAIL_CLIENT.GET_MESSAGE([<i>msgnum</i>]).GET_HEADERS())
+ </pre>]]></COMMENT>
+</RETURN>
+<TAG TYPE="@return">
+<COMMENT><![CDATA[the message headers as <i>table of MAIL_HEADER_T</i>.
+ <pre>
+ SELECT * FROM TABLE(MAIL_CLIENT.GET_MESSAGE([<i>msgnum</i>]).GET_HEADERS())
+ </pre>]]></COMMENT>
+</TAG>
+</FUNCTION>
+<FUNCTION NAME="get_size">
+<COMMENT_FIRST_LINE><![CDATA[ Returns the size of the specified body part in bytes.]]></COMMENT_FIRST_LINE>
+<COMMENT><![CDATA[ Returns the size of the specified body part in bytes.
+]]></COMMENT>
+<ARGUMENT DEFAULT="" MODE="" NAME="p_partindexes" TYPE="varchar2">
+<COMMENT><![CDATA[the identifier for the selected body part - can be determined with the <b>get_structure</b> function.]]></COMMENT>
+</ARGUMENT>
+<RETURN TYPE="number">
+<COMMENT><![CDATA[the size of the specified body part in bytes.]]></COMMENT>
+</RETURN>
+<TAG TYPE="@param">
+<COMMENT><![CDATA[p_partindexes the identifier for the selected body part - can be determined with the <b>get_structure</b> function.]]></COMMENT>
+</TAG>
+<TAG TYPE="@return">
+<COMMENT><![CDATA[the size of the specified body part in bytes.]]></COMMENT>
+</TAG>
+</FUNCTION>
+<FUNCTION NAME="get_size">
+<COMMENT_FIRST_LINE><![CDATA[ Returns the size of the whole message in bytes.]]></COMMENT_FIRST_LINE>
+<COMMENT><![CDATA[ Returns the size of the whole message in bytes.
+]]></COMMENT>
+<RETURN TYPE="number">
+<COMMENT><![CDATA[the size of the message in bytes.]]></COMMENT>
+</RETURN>
+<TAG TYPE="@return">
+<COMMENT><![CDATA[the size of the message in bytes.]]></COMMENT>
+</TAG>
+</FUNCTION>
+<FUNCTION NAME="dump_clob">
+<COMMENT_FIRST_LINE><![CDATA[ Dumps the message "as it is"; i.e. does not interpret the message strcuture.
+]]></COMMENT_FIRST_LINE>
+<COMMENT><![CDATA[ Dumps the message "as it is"; i.e. does not interpret the message strcuture.
+]]></COMMENT>
+<RETURN TYPE="clob">
+<COMMENT><![CDATA[message dump as a CLOB]]></COMMENT>
+</RETURN>
+<TAG TYPE="@return">
+<COMMENT><![CDATA[message dump as a CLOB]]></COMMENT>
+</TAG>
+</FUNCTION>
+<FUNCTION NAME="dump_blob">
+<COMMENT_FIRST_LINE><![CDATA[ Dumps the message "as it is"; i.e. does not interpret the message strcuture.
+]]></COMMENT_FIRST_LINE>
+<COMMENT><![CDATA[ Dumps the message "as it is"; i.e. does not interpret the message strcuture.
+]]></COMMENT>
+<RETURN TYPE="blob">
+<COMMENT><![CDATA[message dump as a BLOB]]></COMMENT>
+</RETURN>
+<TAG TYPE="@return">
+<COMMENT><![CDATA[message dump as a BLOB]]></COMMENT>
+</TAG>
+</FUNCTION>
+<PROCEDURE NAME="copy_message">
+<COMMENT_FIRST_LINE><![CDATA[ Copies the message to another mailbox folder.]]></COMMENT_FIRST_LINE>
+<COMMENT><![CDATA[ Copies the message to another mailbox folder.
+]]></COMMENT>
+<ARGUMENT DEFAULT="" MODE="" NAME="p_target_folder" TYPE="varchar2">
+<COMMENT><![CDATA[the absolute path of the target folder]]></COMMENT>
+</ARGUMENT>
+<TAG TYPE="@param">
+<COMMENT><![CDATA[p_target_folder the absolute path of the target folder]]></COMMENT>
+</TAG>
+</PROCEDURE>
+<PROCEDURE NAME="move_message">
+<COMMENT_FIRST_LINE><![CDATA[ Moves the message to another mailbox folder; i.e. copies the message and marks it as deleted.
+]]></COMMENT_FIRST_LINE>
+<COMMENT><![CDATA[ Moves the message to another mailbox folder; i.e. copies the message and marks it as deleted.
+]]></COMMENT>
+<ARGUMENT DEFAULT="" MODE="" NAME="p_target_folder" TYPE="varchar2">
+<COMMENT><![CDATA[the absolute path of the target folder]]></COMMENT>
+</ARGUMENT>
+<TAG TYPE="@param">
+<COMMENT><![CDATA[p_target_folder the absolute path of the target folder]]></COMMENT>
+</TAG>
+</PROCEDURE>
+<FUNCTION NAME="get_uid">
+<COMMENT_FIRST_LINE><![CDATA[ Returns the message UID (if available)
+]]></COMMENT_FIRST_LINE>
+<COMMENT><![CDATA[ Returns the message UID (if available)
+]]></COMMENT>
+<RETURN TYPE="varchar2">
+<COMMENT><![CDATA[the message UID, null of not available]]></COMMENT>
+</RETURN>
+<TAG TYPE="@return">
+<COMMENT><![CDATA[the message UID, null of not available]]></COMMENT>
+</TAG>
+</FUNCTION>
+<FUNCTION NAME="get_receivedate">
+<COMMENT_FIRST_LINE><![CDATA[ Returns the datetime at which the message has been received by the mail server.]]></COMMENT_FIRST_LINE>
+<COMMENT><![CDATA[ Returns the datetime at which the message has been received by the mail server.
+]]></COMMENT>
+<RETURN TYPE="date">
+<COMMENT><![CDATA[the receive date of the message]]></COMMENT>
+</RETURN>
+<TAG TYPE="@return">
+<COMMENT><![CDATA[the receive date of the message]]></COMMENT>
+</TAG>
+</FUNCTION>
+<FUNCTION NAME="get_recipients">
+<COMMENT_FIRST_LINE><![CDATA[ Returns all message recipients as table of MAIL_ADDR_T
+]]></COMMENT_FIRST_LINE>
+<COMMENT><![CDATA[ Returns all message recipients as table of MAIL_ADDR_T
+]]></COMMENT>
+<RETURN TYPE="mail_addr_t">
+<COMMENT><![CDATA[table containing all message recipients (TO and CC)]]></COMMENT>
+</RETURN>
+<TAG TYPE="@return">
+<COMMENT><![CDATA[table containing all message recipients (TO and CC)]]></COMMENT>
+</TAG>
+</FUNCTION>
+</PACKAGE>
+<PACKAGE NAME="mail_client" SCHEMA="">
+<COMMENT><![CDATA[This package provides procedures and functions to connect to a mail server, open
+a folder and retrieve the messages. The first step is always to connect to the
+mailserver ...
+<pre>
+mail_client.connect_server(
+&nbsp&nbsp;p_hostname => 'mailserver.mydomain.com',
+&nbsp&nbsp;p_port     => 143,
+&nbsp&nbsp;p_protocol => mail_client.protocol_imap,
+&nbsp&nbsp;p_userid   => 'user.name@mailserver.com',
+&nbsp&nbsp;p_passwd   => '***',
+&nbsp&nbsp;p_ssl      => false
+);
+</pre>
+After that the folder has to be opened ...
+<pre>
+mail_client.open_inbox;
+</pre>
+... now we can list the messages ...
+<pre>
+select * from table(mail_client.get_mail_headers())
+</pre>
+... read a message ...
+<pre>
+select mail_client.get_message(1).get_content_clob() from dual
+</pre>
+... "multipart" messages have a complex structure ...
+<pre>
+select * from table(mail_client.get_message(1).get_structure())
+</pre>
+... we can mark a message as "deleted"
+<pre>
+declare
+&nbsp;&nbsp;v_msg mail_t;
+begin
+&nbsp;&nbsp;v_msg := mail_client.get_message(1);
+&nbsp;&nbsp;v_msg.mark_deleted();
+end;
+</pre>
+... "expunge" the folder (permanently delete the message)
+<pre>
+mail_client.expunge_folder;
+</pre>
+... close the folder ...
+<pre>
+mail_client.close_folder;
+</pre>
+... and finally disconnect from the server.
+<pre>
+mail_client.disconnect_server;
+</pre>
+<b>Note for SSL users</b>:<br/>
+SSL users might encounter an error message <tt>ORA-29532: Java call terminated by uncaught Java exception: javax.mail.MessagingException: java.security.ProviderException: nextBytes() failed;</tt> after successfully doing some operations via SSL. This most often occurs on server or virtual machines with no keyboard or mouse attached. The reason is that the /dev/random device has not enough "entropy" to generate the random numbers. A workaround is the have the java engine use "/dev/urandom" instead. This can be achieved with ....
+<pre>
+declare
+&nbsp;&nbsp;v_property varchar2(32767);
+begin
+&nbsp;&nbsp;c_property := dbms_java.set_property('java.security.egd', '/dev/urandom');
+end;
+</pre>
+The database user needs a privilege in order to execute this call:
+<pre>
+begin
+&nbsp;&nbsp;dbms_java.grant_permission(&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;grantee&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&gt;&nbsp;'{<i>Database&nbsp;Schema</i>}',&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;permission_type&nbsp;&nbsp;&nbsp;=&gt;&nbsp;'SYS:java.util.PropertyPermission',
+&nbsp;&nbsp;&nbsp;&nbsp;permission_name&nbsp;&nbsp;&nbsp;=&gt;&nbsp;'java.security.egd',&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;permission_action&nbsp;=&gt;&nbsp;'read,write'&nbsp;
+&nbsp;&nbsp;);
+end;
+/
+</pre>
+]]></COMMENT>
+<CONSTANT NAME="PROTOCOL_IMAP">
+<COMMENT_FIRST_LINE><![CDATA[ Constant for procedure <b>CONNECT_SERVER</b>: Use the IMAP protocol
+]]></COMMENT_FIRST_LINE>
+<COMMENT><![CDATA[ Constant for procedure <b>CONNECT_SERVER</b>: Use the IMAP protocol
+]]></COMMENT>
+<RETURN TYPE="varchar2(4)"/>
+</CONSTANT>
+<CONSTANT NAME="PROTOCOL_POP3">
+<COMMENT_FIRST_LINE><![CDATA[ Constant for procedure <b>CONNECT_SERVER</b>: Use the POP3 protocol
+]]></COMMENT_FIRST_LINE>
+<COMMENT><![CDATA[ Constant for procedure <b>CONNECT_SERVER</b>: Use the POP3 protocol
+]]></COMMENT>
+<RETURN TYPE="varchar2(4)"/>
+</CONSTANT>
+<PROCEDURE NAME="connect_server">
+<COMMENT_FIRST_LINE><![CDATA[ Connects to a mailserver.]]></COMMENT_FIRST_LINE>
+<COMMENT><![CDATA[ Connects to a mailserver.
+]]></COMMENT>
+<ARGUMENT DEFAULT="" MODE="" NAME="p_hostname" TYPE="varchar2">
+<COMMENT><![CDATA[Hostname of the mail server]]></COMMENT>
+</ARGUMENT>
+<ARGUMENT DEFAULT="" MODE="" NAME="p_port" TYPE="number">
+<COMMENT><![CDATA[TCP/IP port of the mail server. For IMAP connections this is typically <b>143</b>, for POP3 connections <b>110</b>.]]></COMMENT>
+</ARGUMENT>
+<ARGUMENT DEFAULT="" MODE="" NAME="p_protocol" TYPE="varchar2">
+<COMMENT><![CDATA[Protocol to use: Either <b>MAIL_CLIENT.PROTOCOL_IMAP</b> or <b>MAIL_CLIENT.PROTOCOL_POP3</b>.]]></COMMENT>
+</ARGUMENT>
+<ARGUMENT DEFAULT="" MODE="" NAME="p_userid" TYPE="varchar2">
+<COMMENT><![CDATA[Userid for the mailserver connection.]]></COMMENT>
+</ARGUMENT>
+<ARGUMENT DEFAULT="" MODE="" NAME="p_passwd" TYPE="varchar2">
+<COMMENT><![CDATA[Password for the mailserver connection.]]></COMMENT>
+</ARGUMENT>
+<ARGUMENT DEFAULT="" MODE="" NAME="p_ssl" TYPE="boolean">
+<COMMENT><![CDATA[SSL flag - defaults to <b>false</b>.]]></COMMENT>
+</ARGUMENT>
+<TAG TYPE="@param">
+<COMMENT><![CDATA[p_hostname Hostname of the mail server]]></COMMENT>
+</TAG>
+<TAG TYPE="@param">
+<COMMENT><![CDATA[p_port TCP/IP port of the mail server. For IMAP connections this is typically <b>143</b>, for POP3 connections <b>110</b>.]]></COMMENT>
+</TAG>
+<TAG TYPE="@param">
+<COMMENT><![CDATA[p_protocol Protocol to use: Either <b>MAIL_CLIENT.PROTOCOL_IMAP</b> or <b>MAIL_CLIENT.PROTOCOL_POP3</b>.]]></COMMENT>
+</TAG>
+<TAG TYPE="@param">
+<COMMENT><![CDATA[p_userid Userid for the mailserver connection.]]></COMMENT>
+</TAG>
+<TAG TYPE="@param">
+<COMMENT><![CDATA[p_passwd Password for the mailserver connection.]]></COMMENT>
+</TAG>
+<TAG TYPE="@param">
+<COMMENT><![CDATA[p_ssl SSL flag - defaults to <b>false</b>.]]></COMMENT>
+</TAG>
+</PROCEDURE>
+<FUNCTION NAME="is_connected">
+<COMMENT_FIRST_LINE><![CDATA[ Checks whether the session is currently connected to a mailserver.]]></COMMENT_FIRST_LINE>
+<COMMENT><![CDATA[ Checks whether the session is currently connected to a mailserver.
+]]></COMMENT>
+<RETURN TYPE="number">
+<COMMENT><![CDATA[1 if a connection exists, 0 otherwise.]]></COMMENT>
+</RETURN>
+<TAG TYPE="@return">
+<COMMENT><![CDATA[1 if a connection exists, 0 otherwise.]]></COMMENT>
+</TAG>
+</FUNCTION>
+<PROCEDURE NAME="open_inbox">
+<COMMENT_FIRST_LINE><![CDATA[ Opens the mailbox folder "INBOX".]]></COMMENT_FIRST_LINE>
+<COMMENT><![CDATA[ Opens the mailbox folder "INBOX". On most mailservers this folder contains the
+ new messages.
+]]></COMMENT>
+</PROCEDURE>
+<PROCEDURE NAME="open_folder">
+<COMMENT_FIRST_LINE><![CDATA[ Opens a mailbox folder
+]]></COMMENT_FIRST_LINE>
+<COMMENT><![CDATA[ Opens a mailbox folder
+]]></COMMENT>
+<ARGUMENT DEFAULT="" MODE="" NAME="p_folder" TYPE="varchar2">
+<COMMENT><![CDATA[absolute folder path]]></COMMENT>
+</ARGUMENT>
+<TAG TYPE="@param">
+<COMMENT><![CDATA[p_folder absolute folder path]]></COMMENT>
+</TAG>
+</PROCEDURE>
+<PROCEDURE NAME="open_parent_folder">
+<COMMENT_FIRST_LINE><![CDATA[ Opens the parent folder.]]></COMMENT_FIRST_LINE>
+<COMMENT><![CDATA[ Opens the parent folder. If the current folder is the root of the folder hierarchy the procedure
+ does nothing.
+]]></COMMENT>
+</PROCEDURE>
+<PROCEDURE NAME="open_child_folder">
+<COMMENT_FIRST_LINE><![CDATA[ Opens a child folder
+]]></COMMENT_FIRST_LINE>
+<COMMENT><![CDATA[ Opens a child folder
+]]></COMMENT>
+<ARGUMENT DEFAULT="" MODE="" NAME="p_foldername" TYPE="varchar2">
+<COMMENT><![CDATA[folder path to be opened relative to the current folder]]></COMMENT>
+</ARGUMENT>
+<TAG TYPE="@param">
+<COMMENT><![CDATA[p_foldername folder path to be opened relative to the current folder]]></COMMENT>
+</TAG>
+</PROCEDURE>
+<PROCEDURE NAME="close_folder">
+<COMMENT_FIRST_LINE><![CDATA[ closes the currently open mailbox folder.]]></COMMENT_FIRST_LINE>
+<COMMENT><![CDATA[ closes the currently open mailbox folder. The mailbox' <i>root folder</i> is the "current" folder afterwards.
+]]></COMMENT>
+<TAG TYPE="@param">
+<COMMENT><![CDATA[p_folder Folder name]]></COMMENT>
+</TAG>
+</PROCEDURE>
+<PROCEDURE NAME="expunge_folder">
+<COMMENT_FIRST_LINE><![CDATA[ performs the "expunge" operation on the mailbox folder: permanatly deletes all messages marked as "deleted".]]></COMMENT_FIRST_LINE>
+<COMMENT><![CDATA[ performs the "expunge" operation on the mailbox folder: permanatly deletes all messages marked as "deleted".
+]]></COMMENT>
+</PROCEDURE>
+<PROCEDURE NAME="disconnect_server">
+<COMMENT_FIRST_LINE><![CDATA[ disconnects from the server.]]></COMMENT_FIRST_LINE>
+<COMMENT><![CDATA[ disconnects from the server.
+]]></COMMENT>
+</PROCEDURE>
+<FUNCTION NAME="get_mail_headers_p">
+<COMMENT_FIRST_LINE><![CDATA[ Retrieve all messages in the folder as <i>TABLE OF MAIL_T</i>.]]></COMMENT_FIRST_LINE>
+<COMMENT><![CDATA[ Retrieve all messages in the folder as <i>TABLE OF MAIL_T</i>. Message-specific operations
+ can be done via methods of <b>MAIL_T</b>. <i>This is the pipelined version of the function; which
+ returns the first messages more quickly and is more memory efficient</i>.
+ <pre>
+ SELECT * FROM TABLE(MAIL_CLIENT.GET_MAIL_HEADERS_P())
+ </pre>
+]]></COMMENT>
+<RETURN TYPE="mail_t">
+<COMMENT><![CDATA[messages of the current folder as <i>TABLE OF MAIL_T</i>]]></COMMENT>
+</RETURN>
+<TAG TYPE="@return">
+<COMMENT><![CDATA[messages of the current folder as <i>TABLE OF MAIL_T</i>]]></COMMENT>
+</TAG>
+</FUNCTION>
+<FUNCTION NAME="get_mail_headers">
+<COMMENT_FIRST_LINE><![CDATA[ Retrieve all messages in the folder as <i>TABLE OF MAIL_T</i>.]]></COMMENT_FIRST_LINE>
+<COMMENT><![CDATA[ Retrieve all messages in the folder as <i>TABLE OF MAIL_T</i>. Message-specific operations
+ can be done via methods of <b>MAIL_T</b>.
+ <pre>
+ SELECT * FROM TABLE(MAIL_CLIENT.GET_MAIL_HEADERS())
+ </pre>
+]]></COMMENT>
+<RETURN TYPE="mail_t">
+<COMMENT><![CDATA[messages of the current folder as <i>TABLE OF MAIL_T</i>]]></COMMENT>
+</RETURN>
+<TAG TYPE="@return">
+<COMMENT><![CDATA[messages of the current folder as <i>TABLE OF MAIL_T</i>]]></COMMENT>
+</TAG>
+</FUNCTION>
+<FUNCTION NAME="get_message">
+<COMMENT_FIRST_LINE><![CDATA[ Get the Message object corresponding to the given message number.]]></COMMENT_FIRST_LINE>
+<COMMENT><![CDATA[ Get the Message object corresponding to the given message number. A Message object's
+ message number is the relative position of this Message in its Folder. Messages are
+ numbered starting at 1 thro get_priority return varchar2ugh the total number of message in the folder. Note that
+ the message number for a particular Message can change during a session if other
+ messages in the Folder are deleted and the Folder is expunged.
+]]></COMMENT>
+<ARGUMENT DEFAULT="" MODE="" NAME="p_message_number" TYPE="number">
+<COMMENT><![CDATA[the message number]]></COMMENT>
+</ARGUMENT>
+<RETURN TYPE="mail_t">
+<COMMENT><![CDATA[the message object as <b>MAIL_T</b>]]></COMMENT>
+</RETURN>
+<TAG TYPE="@param">
+<COMMENT><![CDATA[p_message_number the message number]]></COMMENT>
+</TAG>
+<TAG TYPE="@return">
+<COMMENT><![CDATA[the message object as <b>MAIL_T</b>]]></COMMENT>
+</TAG>
+</FUNCTION>
+<FUNCTION NAME="get_message_count">
+<COMMENT_FIRST_LINE><![CDATA[ Returns the message count within the current folders
+]]></COMMENT_FIRST_LINE>
+<COMMENT><![CDATA[ Returns the message count within the current folders
+]]></COMMENT>
+<RETURN TYPE="number">
+<COMMENT><![CDATA[NUMBER message count]]></COMMENT>
+</RETURN>
+<TAG TYPE="@return">
+<COMMENT><![CDATA[NUMBER message count]]></COMMENT>
+</TAG>
+</FUNCTION>
+<FUNCTION NAME="get_new_message_count">
+<COMMENT_FIRST_LINE><![CDATA[ Returns the "New Message" count within the current folders
+]]></COMMENT_FIRST_LINE>
+<COMMENT><![CDATA[ Returns the "New Message" count within the current folders
+]]></COMMENT>
+<RETURN TYPE="number">
+<COMMENT><![CDATA[NUMBER message count]]></COMMENT>
+</RETURN>
+<TAG TYPE="@return">
+<COMMENT><![CDATA[NUMBER message count]]></COMMENT>
+</TAG>
+</FUNCTION>
+<FUNCTION NAME="get_unread_message_count">
+<COMMENT_FIRST_LINE><![CDATA[ Returns the "Unread Message" count within the current folders
+]]></COMMENT_FIRST_LINE>
+<COMMENT><![CDATA[ Returns the "Unread Message" count within the current folders
+]]></COMMENT>
+<RETURN TYPE="number">
+<COMMENT><![CDATA[NUMBER message count]]></COMMENT>
+</RETURN>
+<TAG TYPE="@return">
+<COMMENT><![CDATA[NUMBER message count]]></COMMENT>
+</TAG>
+</FUNCTION>
+<FUNCTION NAME="get_fetch_limit">
+<COMMENT_FIRST_LINE><![CDATA[ Returns the current Fetch Limit for GET_MAIL_HEADERS.]]></COMMENT_FIRST_LINE>
+<COMMENT><![CDATA[ Returns the current Fetch Limit for GET_MAIL_HEADERS. Note that this only affects
+ the amount of message headers passed from the JVM to the PL/SQL layer. The Java Mail
+ API always retrieves all message headers matching the filter from the POP3 or IMAP server.
+]]></COMMENT>
+<RETURN TYPE="number">
+<COMMENT><![CDATA[NUMBER the current fetch limit - "-1" stands for "unlimited".]]></COMMENT>
+</RETURN>
+<TAG TYPE="@return">
+<COMMENT><![CDATA[NUMBER the current fetch limit - "-1" stands for "unlimited".]]></COMMENT>
+</TAG>
+</FUNCTION>
+<PROCEDURE NAME="set_fetch_limit">
+<COMMENT_FIRST_LINE><![CDATA[ Sets the Fetch Limit for GET_MAIL_HEADERS.]]></COMMENT_FIRST_LINE>
+<COMMENT><![CDATA[ Sets the Fetch Limit for GET_MAIL_HEADERS. Note that this only affects
+ the amount of message headers passed from the JVM to the PL/SQL layer. The Java Mail
+ API always retrieves all message headers matching the filter from the POP3 or IMAP server.
+]]></COMMENT>
+<ARGUMENT DEFAULT="" MODE="" NAME="p_limit" TYPE="number">
+<COMMENT><![CDATA[the new Fetch Limit for GET_MAIL_HEADERS - "-1" means: unlimited]]></COMMENT>
+</ARGUMENT>
+<TAG TYPE="@param">
+<COMMENT><![CDATA[p_limit the new Fetch Limit for GET_MAIL_HEADERS - "-1" means: unlimited]]></COMMENT>
+</TAG>
+</PROCEDURE>
+<FUNCTION NAME="get_folders">
+<COMMENT_FIRST_LINE><![CDATA[ Retrieves the current folders' subfolder list
+]]></COMMENT_FIRST_LINE>
+<COMMENT><![CDATA[ Retrieves the current folders' subfolder list
+]]></COMMENT>
+<RETURN TYPE="mail_array_ct">
+<COMMENT><![CDATA[VARCHAR2 Array containing the current folders' subfolder names]]></COMMENT>
+</RETURN>
+<TAG TYPE="@return">
+<COMMENT><![CDATA[VARCHAR2 Array containing the current folders' subfolder names]]></COMMENT>
+</TAG>
+</FUNCTION>
+<FUNCTION NAME="rfc_decode">
+<COMMENT_FIRST_LINE><![CDATA[ Decodes encoded special characters (unicode, etc) to normal text.]]></COMMENT_FIRST_LINE>
+<COMMENT><![CDATA[ Decodes encoded special characters (unicode, etc) to normal text.
+ <pre>
+ SQL> select mail_client.decode('Test f=?iso-8859-15?B?/A==?=r den Mailserver') decoded_text from dual;
+
+ DECODED_TEXT
+ --------------------------------------------------------------------------------
+ Test f&uuml;r den Mailserver
+ </pre>
+]]></COMMENT>
+<ARGUMENT DEFAULT="" MODE="" NAME="p_text" TYPE="varchar2">
+<COMMENT><![CDATA[the text to be decoded]]></COMMENT>
+</ARGUMENT>
+<RETURN TYPE="varchar2">
+<COMMENT><![CDATA[decoded text]]></COMMENT>
+</RETURN>
+<TAG TYPE="@param">
+<COMMENT><![CDATA[p_text the text to be decoded]]></COMMENT>
+</TAG>
+<TAG TYPE="@return">
+<COMMENT><![CDATA[decoded text]]></COMMENT>
+</TAG>
+</FUNCTION>
+<PROCEDURE NAME="create_folder">
+<COMMENT_FIRST_LINE><![CDATA[ Creates a folder under the current folder
+]]></COMMENT_FIRST_LINE>
+<COMMENT><![CDATA[ Creates a folder under the current folder
+]]></COMMENT>
+<ARGUMENT DEFAULT="" MODE="" NAME="p_foldername" TYPE="varchar2">
+<COMMENT><![CDATA[the path of the subfolder to be created relative to the current folder.]]></COMMENT>
+</ARGUMENT>
+<TAG TYPE="@param">
+<COMMENT><![CDATA[p_foldername the path of the subfolder to be created relative to the current folder.]]></COMMENT>
+</TAG>
+</PROCEDURE>
+<PROCEDURE NAME="rename_folder">
+<COMMENT_FIRST_LINE><![CDATA[ Renames a folder
+]]></COMMENT_FIRST_LINE>
+<COMMENT><![CDATA[ Renames a folder
+]]></COMMENT>
+<ARGUMENT DEFAULT="" MODE="" NAME="p_foldername" TYPE="varchar2">
+<COMMENT><![CDATA[the path of the subfolder to be renamed relative to the current folder.]]></COMMENT>
+</ARGUMENT>
+<ARGUMENT DEFAULT="" MODE="" NAME="p_new_foldername" TYPE="varchar2">
+<COMMENT><![CDATA[the new path relative to the current folder.]]></COMMENT>
+</ARGUMENT>
+<TAG TYPE="@param">
+<COMMENT><![CDATA[p_foldername the path of the subfolder to be renamed relative to the current folder.]]></COMMENT>
+</TAG>
+<TAG TYPE="@param">
+<COMMENT><![CDATA[p_new_foldername the new path relative to the current folder.]]></COMMENT>
+</TAG>
+</PROCEDURE>
+<PROCEDURE NAME="delete_folder">
+<COMMENT_FIRST_LINE><![CDATA[ Deletes a subfolder under the current folder
+]]></COMMENT_FIRST_LINE>
+<COMMENT><![CDATA[ Deletes a subfolder under the current folder
+]]></COMMENT>
+<ARGUMENT DEFAULT="" MODE="" NAME="p_foldername" TYPE="varchar2">
+<COMMENT><![CDATA[the path of the subfolder to be deleted relative to the current folder.]]></COMMENT>
+</ARGUMENT>
+<TAG TYPE="@param">
+<COMMENT><![CDATA[p_foldername the path of the subfolder to be deleted relative to the current folder.]]></COMMENT>
+</TAG>
+</PROCEDURE>
+<FUNCTION NAME="get_folder_name">
+<COMMENT_FIRST_LINE><![CDATA[ Returns the short name of the current folder
+]]></COMMENT_FIRST_LINE>
+<COMMENT><![CDATA[ Returns the short name of the current folder
+]]></COMMENT>
+<RETURN TYPE="varchar2">
+<COMMENT><![CDATA[short name of the current folder.]]></COMMENT>
+</RETURN>
+<TAG TYPE="@return">
+<COMMENT><![CDATA[short name of the current folder.]]></COMMENT>
+</TAG>
+</FUNCTION>
+<FUNCTION NAME="get_folder_fullname">
+<COMMENT_FIRST_LINE><![CDATA[ Returns the full name of the current folder
+]]></COMMENT_FIRST_LINE>
+<COMMENT><![CDATA[ Returns the full name of the current folder
+]]></COMMENT>
+<RETURN TYPE="varchar2">
+<COMMENT><![CDATA[full name of the current folder.]]></COMMENT>
+</RETURN>
+<TAG TYPE="@return">
+<COMMENT><![CDATA[full name of the current folder.]]></COMMENT>
+</TAG>
+</FUNCTION>
+</PACKAGE>
+<PACKAGE NAME="mail_filter" SCHEMA="">
+<COMMENT><![CDATA[ Use the package MAIL_FILTER to set search filters for the MAIL_CLIENT.GET_MAIL_HEADERS function.
+ Filters set with MAIL_FILTER are being executed on the mail server - so that fewer emails
+ will be downloaded to the database. So using MAIL_FILTER is typically more efficient thanm
+ filtering the result of MAIL_CLIENT.GET_MAIL_HEADERS with a SQL WHERE clause.
+ The various ADD_..._FILTER procedures add filters to the search operation being executed when
+ the mail headers are being retrieved. By default, multiple filters are being combined by AND. Use
+ the SET_FILTER_COMBINATION procedure to change this. The P_MATCH attribute of each filter
+ determines whether the mail server should look for true or false matches.
+ Use the CLEAR_FILTERS procedure in order to remove all filters previously set. MAIL_CLIENT.GET_MAIL_HEADERS
+ will then retrieve all mails of the selected server folder.
+ Usage:
+ <pre>
+ -- Retrieve only mails which were sent since yesterday
+ MAIL_FILTER.ADD_SENTDATE_FILTER(sysdate - 1, '>=', true);
+ -- Retrieve only mails which are sent directly to John Doe ("to", not "cc" or "bcc")
+ MAIL_FILTER.ADD_TO_FILTER('john.doe@company.com');
+ -- Retrieve all mails except those directly sent to John Doe ("to", not "cc" or "bcc")
+ MAIL_FILTER.ADD_TO_FILTER('john.doe@company.com', false);
+ </pre>
+]]></COMMENT>
+<CONSTANT NAME="FILTER_COMB_AND">
+<COMMENT_FIRST_LINE><![CDATA[ Constant for mail filter combination: {filter1} AND {filter2} AND ... AND {filterN}
+]]></COMMENT_FIRST_LINE>
+<COMMENT><![CDATA[ Constant for mail filter combination: {filter1} AND {filter2} AND ... AND {filterN}
+]]></COMMENT>
+<RETURN TYPE="number"/>
+</CONSTANT>
+<CONSTANT NAME="FILTER_COMB_OR">
+<COMMENT_FIRST_LINE><![CDATA[ Constant for mail filter combination: {filter1} OR {filter2} OR ... OR {filterN}
+]]></COMMENT_FIRST_LINE>
+<COMMENT><![CDATA[ Constant for mail filter combination: {filter1} OR {filter2} OR ... OR {filterN}
+]]></COMMENT>
+<RETURN TYPE="number"/>
+</CONSTANT>
+<CONSTANT NAME="FILTER_COMB_NOT_AND">
+<COMMENT_FIRST_LINE><![CDATA[ Constant for mail filter combination: NOT({filter1} AND {filter2} AND ... AND {filterN})
+]]></COMMENT_FIRST_LINE>
+<COMMENT><![CDATA[ Constant for mail filter combination: NOT({filter1} AND {filter2} AND ... AND {filterN})
+]]></COMMENT>
+<RETURN TYPE="number"/>
+</CONSTANT>
+<CONSTANT NAME="FILTER_COMB_NOT_OR">
+<COMMENT_FIRST_LINE><![CDATA[ Constant for mail filter combination: NOT({filter1} OR {filter2} OR ... AND {filterN})
+]]></COMMENT_FIRST_LINE>
+<COMMENT><![CDATA[ Constant for mail filter combination: NOT({filter1} OR {filter2} OR ... AND {filterN})
+]]></COMMENT>
+<RETURN TYPE="number"/>
+</CONSTANT>
+<PROCEDURE NAME="clear_filters">
+<COMMENT_FIRST_LINE><![CDATA[ Clears all previously set mail filters.]]></COMMENT_FIRST_LINE>
+<COMMENT><![CDATA[ Clears all previously set mail filters. GET_MAIL_HEADERS will not return all contents of the mail
+ folder.
+]]></COMMENT>
+</PROCEDURE>
+<PROCEDURE NAME="add_from_filter">
+<COMMENT_FIRST_LINE><![CDATA[ Adds a filter for the Email sender attribute (FROM).]]></COMMENT_FIRST_LINE>
+<COMMENT><![CDATA[ Adds a filter for the Email sender attribute (FROM).
+ Subsequent calls of GET_MAIL_HEADERS will only return Emails matching this filter
+]]></COMMENT>
+<ARGUMENT DEFAULT="" MODE="" NAME="p_filter" TYPE="varchar2">
+<COMMENT><![CDATA[The text for search for in the FROM attribute of an email.]]></COMMENT>
+</ARGUMENT>
+<ARGUMENT DEFAULT="" MODE="" NAME="p_match" TYPE="boolean">
+<COMMENT><![CDATA[<b>true</b> (default): return email matching the filter - <b>false</b>: return all other emails]]></COMMENT>
+</ARGUMENT>
+<TAG TYPE="@param">
+<COMMENT><![CDATA[p_filter The text for search for in the FROM attribute of an email.]]></COMMENT>
+</TAG>
+<TAG TYPE="@param">
+<COMMENT><![CDATA[p_match  <b>true</b> (default): return email matching the filter - <b>false</b>: return all other emails]]></COMMENT>
+</TAG>
+</PROCEDURE>
+<PROCEDURE NAME="add_cc_filter">
+<COMMENT_FIRST_LINE><![CDATA[ Adds a filter for the Email recipient attribute TO.]]></COMMENT_FIRST_LINE>
+<COMMENT><![CDATA[ Adds a filter for the Email recipient attribute TO.
+ Subsequent calls of GET_MAIL_HEADERS will only return Emails matching this filter
+]]></COMMENT>
+<ARGUMENT DEFAULT="" MODE="" NAME="p_filter" TYPE="varchar2">
+<COMMENT><![CDATA[The text for search for in the TO attribute of an email.]]></COMMENT>
+</ARGUMENT>
+<ARGUMENT DEFAULT="" MODE="" NAME="p_match" TYPE="boolean">
+<COMMENT><![CDATA[<b>true</b> (default): return email matching the filter - <b>false</b>: return all other emails]]></COMMENT>
+</ARGUMENT>
+<TAG TYPE="@param">
+<COMMENT><![CDATA[p_filter The text for search for in the TO attribute of an email.]]></COMMENT>
+</TAG>
+<TAG TYPE="@param">
+<COMMENT><![CDATA[p_match  <b>true</b> (default): return email matching the filter - <b>false</b>: return all other emails]]></COMMENT>
+</TAG>
+</PROCEDURE>
+<PROCEDURE NAME="add_bcc_filter">
+<COMMENT_FIRST_LINE><![CDATA[ Adds a filter for the Email recipient attribute CC.]]></COMMENT_FIRST_LINE>
+<COMMENT><![CDATA[ Adds a filter for the Email recipient attribute CC.
+ Subsequent calls of GET_MAIL_HEADERS will only return Emails matching this filter
+]]></COMMENT>
+<ARGUMENT DEFAULT="" MODE="" NAME="p_filter" TYPE="varchar2">
+<COMMENT><![CDATA[The text for search for in the CC attribute of an email.]]></COMMENT>
+</ARGUMENT>
+<ARGUMENT DEFAULT="" MODE="" NAME="p_match" TYPE="boolean">
+<COMMENT><![CDATA[<b>true</b> (default): return email matching the filter - <b>false</b>: return all other emails]]></COMMENT>
+</ARGUMENT>
+<TAG TYPE="@param">
+<COMMENT><![CDATA[p_filter The text for search for in the CC attribute of an email.]]></COMMENT>
+</TAG>
+<TAG TYPE="@param">
+<COMMENT><![CDATA[p_match  <b>true</b> (default): return email matching the filter - <b>false</b>: return all other emails]]></COMMENT>
+</TAG>
+</PROCEDURE>
+<PROCEDURE NAME="add_to_filter">
+<COMMENT_FIRST_LINE><![CDATA[ Adds a filter for the Email recipient attribute BCC.]]></COMMENT_FIRST_LINE>
+<COMMENT><![CDATA[ Adds a filter for the Email recipient attribute BCC.
+ Subsequent calls of GET_MAIL_HEADERS will only return Emails matching this filter
+]]></COMMENT>
+<ARGUMENT DEFAULT="" MODE="" NAME="p_filter" TYPE="varchar2">
+<COMMENT><![CDATA[The text for search for in the BCC attribute of an email.]]></COMMENT>
+</ARGUMENT>
+<ARGUMENT DEFAULT="" MODE="" NAME="p_match" TYPE="boolean">
+<COMMENT><![CDATA[<b>true</b> (default): return email matching the filter - <b>false</b>: return all other emails]]></COMMENT>
+</ARGUMENT>
+<TAG TYPE="@param">
+<COMMENT><![CDATA[p_filter The text for search for in the BCC attribute of an email.]]></COMMENT>
+</TAG>
+<TAG TYPE="@param">
+<COMMENT><![CDATA[p_match  <b>true</b> (default): return email matching the filter - <b>false</b>: return all other emails]]></COMMENT>
+</TAG>
+</PROCEDURE>
+<PROCEDURE NAME="add_sentdate_filter">
+<COMMENT_FIRST_LINE><![CDATA[ Adds a filter for the datetime at which the Email was sent.]]></COMMENT_FIRST_LINE>
+<COMMENT><![CDATA[ Adds a filter for the datetime at which the Email was sent.
+ Subsequent calls of GET_MAIL_HEADERS will only return Emails matching this filter
+]]></COMMENT>
+<ARGUMENT DEFAULT="" MODE="" NAME="p_filter" TYPE="date">
+<COMMENT><![CDATA[The date to compare with the send date of the email.]]></COMMENT>
+</ARGUMENT>
+<ARGUMENT DEFAULT="" MODE="" NAME="p_comp" TYPE="varchar2">
+<COMMENT><![CDATA[Comparison operator: Choose between =, !=, &lt; &gt; &lt;= or &gt;=]]></COMMENT>
+</ARGUMENT>
+<ARGUMENT DEFAULT="" MODE="" NAME="p_match" TYPE="boolean">
+<COMMENT><![CDATA[<b>true</b> (default): return email matching the filter - <b>false</b>: return all other emails]]></COMMENT>
+</ARGUMENT>
+<TAG TYPE="@param">
+<COMMENT><![CDATA[p_filter The date to compare with the send date of the email.]]></COMMENT>
+</TAG>
+<TAG TYPE="@param">
+<COMMENT><![CDATA[p_comp  Comparison operator: Choose between =, !=, &lt; &gt; &lt;= or &gt;=]]></COMMENT>
+</TAG>
+<TAG TYPE="@param">
+<COMMENT><![CDATA[p_match  <b>true</b> (default): return email matching the filter - <b>false</b>: return all other emails]]></COMMENT>
+</TAG>
+</PROCEDURE>
+<PROCEDURE NAME="add_receiveddate_filter">
+<COMMENT_FIRST_LINE><![CDATA[ Adds a filter for the datetime at which the Email was received by the mail server.]]></COMMENT_FIRST_LINE>
+<COMMENT><![CDATA[ Adds a filter for the datetime at which the Email was received by the mail server.
+ Subsequent calls of GET_MAIL_HEADERS will only return Emails matching this filter
+]]></COMMENT>
+<ARGUMENT DEFAULT="" MODE="" NAME="p_filter" TYPE="date">
+<COMMENT><![CDATA[The date to compare with the receiving date of the email.]]></COMMENT>
+</ARGUMENT>
+<ARGUMENT DEFAULT="" MODE="" NAME="p_comp" TYPE="varchar2">
+<COMMENT><![CDATA[Comparison operator: Choose between =, !=, &lt; &gt; &lt;= or &gt;=]]></COMMENT>
+</ARGUMENT>
+<ARGUMENT DEFAULT="" MODE="" NAME="p_match" TYPE="boolean">
+<COMMENT><![CDATA[<b>true</b> (default): return email matching the filter - <b>false</b>: return all other emails]]></COMMENT>
+</ARGUMENT>
+<TAG TYPE="@param">
+<COMMENT><![CDATA[p_filter The date to compare with the receiving date of the email.]]></COMMENT>
+</TAG>
+<TAG TYPE="@param">
+<COMMENT><![CDATA[p_comp  Comparison operator: Choose between =, !=, &lt; &gt; &lt;= or &gt;=]]></COMMENT>
+</TAG>
+<TAG TYPE="@param">
+<COMMENT><![CDATA[p_match  <b>true</b> (default): return email matching the filter - <b>false</b>: return all other emails]]></COMMENT>
+</TAG>
+</PROCEDURE>
+<PROCEDURE NAME="add_subject_filter">
+<COMMENT_FIRST_LINE><![CDATA[ Adds a filter for the Email subject.]]></COMMENT_FIRST_LINE>
+<COMMENT><![CDATA[ Adds a filter for the Email subject.
+ Subsequent calls of GET_MAIL_HEADERS will only return Emails matching this filter
+]]></COMMENT>
+<ARGUMENT DEFAULT="" MODE="" NAME="p_filter" TYPE="varchar2">
+<COMMENT><![CDATA[The text for search for in the email subject.]]></COMMENT>
+</ARGUMENT>
+<ARGUMENT DEFAULT="" MODE="" NAME="p_negative" TYPE="boolean"/>
+<TAG TYPE="@param">
+<COMMENT><![CDATA[p_filter The text for search for in the email subject.]]></COMMENT>
+</TAG>
+<TAG TYPE="@param">
+<COMMENT><![CDATA[p_match  <b>true</b> (default): return email matching the filter - <b>false</b>: return all other emails]]></COMMENT>
+</TAG>
+</PROCEDURE>
+<PROCEDURE NAME="add_deleted_filter">
+<COMMENT_FIRST_LINE><![CDATA[ Adds a filter for the "DELETED" flag of an email.]]></COMMENT_FIRST_LINE>
+<COMMENT><![CDATA[ Adds a filter for the "DELETED" flag of an email.
+ Subsequent calls of GET_MAIL_HEADERS will only return Emails matching this filter
+]]></COMMENT>
+<ARGUMENT DEFAULT="" MODE="" NAME="p_match" TYPE="boolean">
+<COMMENT><![CDATA[<b>true</b> (default): return email matching the filter - <b>false</b>: return all other emails]]></COMMENT>
+</ARGUMENT>
+<TAG TYPE="@param">
+<COMMENT><![CDATA[p_match  <b>true</b> (default): return email matching the filter - <b>false</b>: return all other emails]]></COMMENT>
+</TAG>
+</PROCEDURE>
+<PROCEDURE NAME="add_header_filter">
+<COMMENT_FIRST_LINE><![CDATA[ Adds a filter for any given Email haeder.]]></COMMENT_FIRST_LINE>
+<COMMENT><![CDATA[ Adds a filter for any given Email haeder.
+ Subsequent calls of GET_MAIL_HEADERS will only return Emails matching this filter
+]]></COMMENT>
+<ARGUMENT DEFAULT="" MODE="" NAME="p_header" TYPE="varchar2">
+<COMMENT><![CDATA[The name of the header field to filter on.]]></COMMENT>
+</ARGUMENT>
+<ARGUMENT DEFAULT="" MODE="" NAME="p_filter" TYPE="varchar2">
+<COMMENT><![CDATA[The text for search for in the given header.]]></COMMENT>
+</ARGUMENT>
+<ARGUMENT DEFAULT="" MODE="" NAME="p_match" TYPE="boolean">
+<COMMENT><![CDATA[<b>true</b> (default): return email matching the filter - <b>false</b>: return all other emails]]></COMMENT>
+</ARGUMENT>
+<TAG TYPE="@param">
+<COMMENT><![CDATA[p_header The name of the header field to filter on.]]></COMMENT>
+</TAG>
+<TAG TYPE="@param">
+<COMMENT><![CDATA[p_filter The text for search for in the given header.]]></COMMENT>
+</TAG>
+<TAG TYPE="@param">
+<COMMENT><![CDATA[p_match  <b>true</b> (default): return email matching the filter - <b>false</b>: return all other emails]]></COMMENT>
+</TAG>
+</PROCEDURE>
+<PROCEDURE NAME="add_seen_filter">
+<COMMENT_FIRST_LINE><![CDATA[ Adds a filter for the "SEEN" flag of an email.]]></COMMENT_FIRST_LINE>
+<COMMENT><![CDATA[ Adds a filter for the "SEEN" flag of an email.
+ Subsequent calls of GET_MAIL_HEADERS will only return Emails matching this filter
+]]></COMMENT>
+<ARGUMENT DEFAULT="" MODE="" NAME="p_match" TYPE="boolean">
+<COMMENT><![CDATA[<b>true</b> (default): return email matching the filter - <b>false</b>: return all other emails]]></COMMENT>
+</ARGUMENT>
+<TAG TYPE="@param">
+<COMMENT><![CDATA[p_match  <b>true</b> (default): return email matching the filter - <b>false</b>: return all other emails]]></COMMENT>
+</TAG>
+</PROCEDURE>
+<PROCEDURE NAME="add_body_filter">
+<COMMENT_FIRST_LINE><![CDATA[ Adds a filter to search within the email body.]]></COMMENT_FIRST_LINE>
+<COMMENT><![CDATA[ Adds a filter to search within the email body. All parts of type "text/*" are being searched.
+ Subsequent calls of GET_MAIL_HEADERS will only return Emails matching this filter
+]]></COMMENT>
+<ARGUMENT DEFAULT="" MODE="" NAME="p_filter" TYPE="varchar2"/>
+<ARGUMENT DEFAULT="" MODE="" NAME="p_match" TYPE="boolean">
+<COMMENT><![CDATA[<b>true</b> (default): return email matching the filter - <b>false</b>: return all other emails]]></COMMENT>
+</ARGUMENT>
+<TAG TYPE="@param">
+<COMMENT><![CDATA[p_match  <b>true</b> (default): return email matching the filter - <b>false</b>: return all other emails]]></COMMENT>
+</TAG>
+</PROCEDURE>
+<PROCEDURE NAME="add_size_filter">
+<COMMENT_FIRST_LINE><![CDATA[ Adds a filter for the message size.]]></COMMENT_FIRST_LINE>
+<COMMENT><![CDATA[ Adds a filter for the message size.
+ Subsequent calls of GET_MAIL_HEADERS will only return Emails matching this filter
+]]></COMMENT>
+<ARGUMENT DEFAULT="" MODE="" NAME="p_filter" TYPE="number">
+<COMMENT><![CDATA[The size to be compared with in bytes.]]></COMMENT>
+</ARGUMENT>
+<ARGUMENT DEFAULT="" MODE="" NAME="p_comp" TYPE="varchar2">
+<COMMENT><![CDATA[Comparison operator: Choose between =, !=, &lt; &gt; &lt;= or &gt;=]]></COMMENT>
+</ARGUMENT>
+<ARGUMENT DEFAULT="" MODE="" NAME="p_match" TYPE="boolean">
+<COMMENT><![CDATA[<b>true</b> (default): return email matching the filter - <b>false</b>: return all other emails]]></COMMENT>
+</ARGUMENT>
+<TAG TYPE="@param">
+<COMMENT><![CDATA[p_filter The size to be compared with in bytes.]]></COMMENT>
+</TAG>
+<TAG TYPE="@param">
+<COMMENT><![CDATA[p_comp  Comparison operator: Choose between =, !=, &lt; &gt; &lt;= or &gt;=]]></COMMENT>
+</TAG>
+<TAG TYPE="@param">
+<COMMENT><![CDATA[p_match  <b>true</b> (default): return email matching the filter - <b>false</b>: return all other emails]]></COMMENT>
+</TAG>
+</PROCEDURE>
+<PROCEDURE NAME="set_filter_combination">
+<COMMENT_FIRST_LINE><![CDATA[ Determines how multiple search filters are to be combined.]]></COMMENT_FIRST_LINE>
+<COMMENT><![CDATA[ Determines how multiple search filters are to be combined.
+]]></COMMENT>
+<ARGUMENT DEFAULT="" MODE="" NAME="p_combination" TYPE="number">
+<COMMENT><![CDATA[Choose one of the 4 predefined constants.
+ <pre>
+ FILTER_COMB_AND:     {filter1} AND {filter2} AND ... {filterN}
+ FILTER_COMB_OR:      {filter1} OR {filter2} OR ... {filterN}
+ FILTER_COMB_NOT_AND: NOT ( {filter1} AND {filter2} AND ... {filterN} )
+ FILTER_COMB_NOT_OR:  NOT ( {filter1} OR {filter2} OR ... {filterN} )
+ </pre>]]></COMMENT>
+</ARGUMENT>
+<TAG TYPE="@param">
+<COMMENT><![CDATA[p_combination Choose one of the 4 predefined constants.
+ <pre>
+ FILTER_COMB_AND:     {filter1} AND {filter2} AND ... {filterN}
+ FILTER_COMB_OR:      {filter1} OR {filter2} OR ... {filterN}
+ FILTER_COMB_NOT_AND: NOT ( {filter1} AND {filter2} AND ... {filterN} )
+ FILTER_COMB_NOT_OR:  NOT ( {filter1} OR {filter2} OR ... {filterN} )
+ </pre>]]></COMMENT>
+</TAG>
+</PROCEDURE>
+</PACKAGE>
+<GENERATOR>
+<OBJECTS>
+<PROCESSED COUNT="1"/>
+<SKIPPED COUNT="0"/>
+</OBJECTS>
+<CREATED DATE="26.05.14" TIME="09:23"/>
+</GENERATOR>
+</APPLICATION>

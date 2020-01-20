@@ -1,0 +1,80 @@
+0.1 initial version
+
+0.2 
+    * Changed execution model from Definers' rights to invokers' rights
+      - added grantPublic.sql script to publish the package to the whole instance
+      - database users only need java network privilege to connect to the mailserver
+
+    * fixed bugs:
+      - Bug in the sun implementation of expungeFolder for the pop3 protocol
+        Thanks to Andre Meier for pointing out this and providing a solution
+      - NullPointerException when message subject is missing or sender email contains no personal name
+      - documentation bug: MARK_DELETE was wrongly documented
+
+0.22  
+    * moved all hardcoded database object type names to static final String variables
+      (this makes changes to the DB object naming easier)
+    * added MAIL_T.GET_PRIORITY method (as of yet not documented)
+
+0.9
+    * Added the GET_UID method
+    * Added folder operations (create, delete, rename) to MAIL_CLIENT
+    * Added SSL support
+
+0.91
+    * Added the MOVE_MESSAGE method
+    * Added the GET_MAIL_HEADERS_P method which returns the first rows more quickly (pipelined function)
+
+0.92
+    * Added the IS_CONNECTED method
+    * Added a note for SSL users about using /dev/urandom instead of /dev/random in case
+      Of Error Messages during the SSL connection to the documentation.
+
+0.93
+    * Fixed an issue when using the package in the 11.2 database release
+      # ORA-29532: Java call terminated by uncaught Java exception:
+      # java.sql.SQLException: Invalid argument(s) in call
+      # This is due to a bug in 11.2 which leads some JDBC 3.0 calls to error out
+      # Changed those calls back to JDBC 2.0 syntax
+
+0.931
+    * Fixed a bug in the "addMessageParts" method - thanks to John Scott from APEX evangelists
+
+0.932 
+    * Bug "Throws ClassCastExceptions in some cases when retrieving email sender attributes" - fixed.
+
+1.0
+    * Added Package MAIL_FILTER in order to use server-side filtering for the GET_MAIL_HEADERS Call
+      Thanks to Christian Haﬂlbauer for idea and testing
+    * Added the GET_RECEIVEDATE method in MAIL_T
+      Thanks to Christian Haﬂlbauer for idea and testing
+    
+
+1.1 
+    * Added an FAQ
+    * added the MAIL_CLIENT.GET_FETCH_LIMIT and SET_FETCH_LIMIT methods in order to limit
+      the amount of messages retrieved by GET_MAIL_HEADERS or GET_MAIL_HEADERS_P
+    * added the GET_MESSAGE_COUNT, GET_NEW_MESSAGE_COUNT and GET_UNREAD_MESSAGE_COUNT methods
+ 
+
+1.1.1 
+    * Added MAIL_T.GET_RECIPIENTS to the documentation
+    * Added code to deal with ClassCastExceptions occurring on 11.2.0.4 databases 
+      when MAIL_CLIENT.GET_STRUCTURE is being called.  
+    * Replaced Calls to Session.getDefaultInstance() with Session.getInstance() in order
+    * to support connections to different mailservers within the same database session
+
+1.1.2
+    * Fixed:  GET_MAIL_HEADERS_P returning no rows when fetch limit is set to -1 (unlimited) 
+
+1.1.3
+    * Added Bugfix by Christian Haﬂlbauer to the MAIL_CLIENT.RFC_DECODE function
+    * RFC2047 is now correctly handled.
+
+1.1.4
+    * Removed Umlauts ("ﬂ") from "install.sql" script in order to prevent installation errors
+      in Unicode databases
+
+1.1.5
+    * Added code to prevent NullPointerExceptions caused by faulty message headers in GET_MAIL_HEADERS
+    * Added DUMP_CLOB2 and DUMP_BLOB2 methods to dump complete messages as BLOB and CLOB

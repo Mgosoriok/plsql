@@ -1,0 +1,799 @@
+<HTML>
+<HEAD>
+<META http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<TITLE>PL/SQL Email Client</TITLE>
+<LINK TITLE="Style" HREF="stylesheet.css" TYPE="text/css" REL="stylesheet">
+</HEAD>
+<BODY BGCOLOR="white">
+<TABLE CELLSPACING="0" CELLPADDING="1" WIDTH="100%" BORDER="0">
+<TR>
+<TD CLASS="NavBarRow1" COLSPAN="2">
+<TABLE CELLSPACING="3" CELLPADDING="0" BORDER="0">
+<TR VALIGN="top" ALIGN="center">
+<TD CLASS="NavBarRow1"><A HREF="summary.html"><FONT CLASS="NavBarFont1"><B>Overview</B></FONT></A> &nbsp;</TD><TD CLASS="NavBarRow1"><A HREF="deprecated-list.html"><FONT CLASS="NavBarFont1"><B>Deprecated</B></FONT></A> &nbsp;</TD><TD CLASS="NavBarRow1"><A HREF="index-list.html"><FONT CLASS="NavBarFont1"><B>Index</B></FONT></A> &nbsp;</TD><TD CLASS="NavBarRow1"><A HREF="generator.html"><FONT CLASS="NavBarFont1"><B>Generator</B></FONT></A> &nbsp;</TD>
+</TR>
+</TABLE>
+</TD><TD rowspan="3" VALIGN="top" ALIGN="right"><EM><b>PL/SQL Email Client</b></EM></TD>
+</TR>
+<TR>
+<TD CLASS="NavBarRow3" VALIGN="top"><FONT SIZE="-2">
+      SUMMARY:  <A HREF="#field_summary">FIELD</A> | <A HREF="#type_summary">TYPE</A> | <A HREF="#method_summary">METHOD</A></FONT></TD><TD CLASS="NavBarRow3" VALIGN="top"><FONT SIZE="-2">
+    DETAIL:  <A HREF="#field_detail">FIELD</A> | <A HREF="#type_detail">TYPE</A> | <A HREF="#method_detail">METHOD</A></FONT></TD>
+</TR>
+</TABLE>
+<HR>
+<H2>
+<FONT SIZE="-1"></FONT>
+<BR>
+    Package  mail_client</H2>This package provides procedures and functions to connect to a mail server, open
+a folder and retrieve the messages. The first step is always to connect to the
+mailserver ...
+<pre>
+mail_client.connect_server(
+&nbsp&nbsp;p_hostname => 'mailserver.mydomain.com',
+&nbsp&nbsp;p_port     => 143,
+&nbsp&nbsp;p_protocol => mail_client.protocol_imap,
+&nbsp&nbsp;p_userid   => 'user.name@mailserver.com',
+&nbsp&nbsp;p_passwd   => '***',
+&nbsp&nbsp;p_ssl      => false
+);
+</pre>
+After that the folder has to be opened ...
+<pre>
+mail_client.open_inbox;
+</pre>
+... now we can list the messages ...
+<pre>
+select * from table(mail_client.get_mail_headers())
+</pre>
+... read a message ...
+<pre>
+select mail_client.get_message(1).get_content_clob() from dual
+</pre>
+... "multipart" messages have a complex structure ...
+<pre>
+select * from table(mail_client.get_message(1).get_structure())
+</pre>
+... we can mark a message as "deleted"
+<pre>
+declare
+&nbsp;&nbsp;v_msg mail_t;
+begin
+&nbsp;&nbsp;v_msg := mail_client.get_message(1);
+&nbsp;&nbsp;v_msg.mark_deleted();
+end;
+</pre>
+... "expunge" the folder (permanently delete the message)
+<pre>
+mail_client.expunge_folder;
+</pre>
+... close the folder ...
+<pre>
+mail_client.close_folder;
+</pre>
+... and finally disconnect from the server.
+<pre>
+mail_client.disconnect_server;
+</pre>
+<b>Note for SSL users</b>:<br/>
+SSL users might encounter an error message <tt>ORA-29532: Java call terminated by uncaught Java exception: javax.mail.MessagingException: java.security.ProviderException: nextBytes() failed;</tt> after successfully doing some operations via SSL. This most often occurs on server or virtual machines with no keyboard or mouse attached. The reason is that the /dev/random device has not enough "entropy" to generate the random numbers. A workaround is the have the java engine use "/dev/urandom" instead. This can be achieved with ....
+<pre>
+declare
+&nbsp;&nbsp;v_property varchar2(32767);
+begin
+&nbsp;&nbsp;c_property := dbms_java.set_property('java.security.egd', '/dev/urandom');
+end;
+</pre>
+The database user needs a privilege in order to execute this call:
+<pre>
+begin
+&nbsp;&nbsp;dbms_java.grant_permission(&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;grantee&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&gt;&nbsp;'{<i>Database&nbsp;Schema</i>}',&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;permission_type&nbsp;&nbsp;&nbsp;=&gt;&nbsp;'SYS:java.util.PropertyPermission',
+&nbsp;&nbsp;&nbsp;&nbsp;permission_name&nbsp;&nbsp;&nbsp;=&gt;&nbsp;'java.security.egd',&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;permission_action&nbsp;=&gt;&nbsp;'read,write'&nbsp;
+&nbsp;&nbsp;);
+end;
+/
+</pre>
+<P></P>
+<DL></DL>
+<HR>
+<P></P>
+<A NAME="field_summary"></A>
+<TABLE WIDTH="100%" CELLSPACING="0" CELLPADDING="3" BORDER="1">
+<TR CLASS="TableHeadingColor">
+<TD COLSPAN="2"><FONT SIZE="+2"><B>Field Summary</B></FONT></TD>
+</TR>
+<TR CLASS="TableRowColor">
+<TD WIDTH="1%" VALIGN="top" ALIGN="right"><FONT SIZE="-1"><CODE>&nbsp;varchar2(4)</CODE></FONT></TD><TD><CODE><B><A HREF="#PROTOCOL_IMAP">PROTOCOL_IMAP</A></B></CODE>
+<BR>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+       Constant for procedure <b>CONNECT_SERVER</b>: Use the IMAP protocol
+</TD>
+</TR>
+<TR CLASS="TableRowColor">
+<TD WIDTH="1%" VALIGN="top" ALIGN="right"><FONT SIZE="-1"><CODE>&nbsp;varchar2(4)</CODE></FONT></TD><TD><CODE><B><A HREF="#PROTOCOL_POP3">PROTOCOL_POP3</A></B></CODE>
+<BR>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+       Constant for procedure <b>CONNECT_SERVER</b>: Use the POP3 protocol
+</TD>
+</TR>
+</TABLE>
+<P></P>
+<A NAME="type_summary"></A><A NAME="method_summary"></A>
+<TABLE WIDTH="100%" CELLSPACING="0" CELLPADDING="3" BORDER="1">
+<TR CLASS="TableHeadingColor">
+<TD COLSPAN="2"><FONT SIZE="+2"><B>Method Summary</B></FONT></TD>
+</TR>
+<TR CLASS="TableRowColor">
+<TD WIDTH="1%" VALIGN="top" ALIGN="right"><FONT SIZE="-1"><CODE>&nbsp;</CODE></FONT></TD><TD><CODE><B><A HREF="#close_folder">close_folder</A></B>()</CODE>
+<BR>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+       closes the currently open mailbox folder.</TD>
+</TR>
+<TR CLASS="TableRowColor">
+<TD WIDTH="1%" VALIGN="top" ALIGN="right"><FONT SIZE="-1"><CODE>&nbsp;</CODE></FONT></TD><TD><CODE><B><A HREF="#connect_server(varchar2,number,varchar2,varchar2,varchar2,boolean)">connect_server</A></B>(p_hostname varchar2, p_port number, p_protocol varchar2, p_userid varchar2, p_passwd varchar2, p_ssl boolean)</CODE>
+<BR>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+       Connects to a mailserver.</TD>
+</TR>
+<TR CLASS="TableRowColor">
+<TD WIDTH="1%" VALIGN="top" ALIGN="right"><FONT SIZE="-1"><CODE>&nbsp;</CODE></FONT></TD><TD><CODE><B><A HREF="#create_folder(varchar2)">create_folder</A></B>(p_foldername varchar2)</CODE>
+<BR>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+       Creates a folder under the current folder
+</TD>
+</TR>
+<TR CLASS="TableRowColor">
+<TD WIDTH="1%" VALIGN="top" ALIGN="right"><FONT SIZE="-1"><CODE>&nbsp;</CODE></FONT></TD><TD><CODE><B><A HREF="#delete_folder(varchar2)">delete_folder</A></B>(p_foldername varchar2)</CODE>
+<BR>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+       Deletes a subfolder under the current folder
+</TD>
+</TR>
+<TR CLASS="TableRowColor">
+<TD WIDTH="1%" VALIGN="top" ALIGN="right"><FONT SIZE="-1"><CODE>&nbsp;</CODE></FONT></TD><TD><CODE><B><A HREF="#disconnect_server">disconnect_server</A></B>()</CODE>
+<BR>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+       disconnects from the server.</TD>
+</TR>
+<TR CLASS="TableRowColor">
+<TD WIDTH="1%" VALIGN="top" ALIGN="right"><FONT SIZE="-1"><CODE>&nbsp;</CODE></FONT></TD><TD><CODE><B><A HREF="#expunge_folder">expunge_folder</A></B>()</CODE>
+<BR>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+       performs the "expunge" operation on the mailbox folder: permanatly deletes all messages marked as "deleted".</TD>
+</TR>
+<TR CLASS="TableRowColor">
+<TD WIDTH="1%" VALIGN="top" ALIGN="right"><FONT SIZE="-1"><CODE>&nbsp;number</CODE></FONT></TD><TD><CODE><B><A HREF="#get_fetch_limit">get_fetch_limit</A></B>()</CODE>
+<BR>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+       Returns the current Fetch Limit for GET_MAIL_HEADERS.</TD>
+</TR>
+<TR CLASS="TableRowColor">
+<TD WIDTH="1%" VALIGN="top" ALIGN="right"><FONT SIZE="-1"><CODE>&nbsp;varchar2</CODE></FONT></TD><TD><CODE><B><A HREF="#get_folder_fullname">get_folder_fullname</A></B>()</CODE>
+<BR>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+       Returns the full name of the current folder
+</TD>
+</TR>
+<TR CLASS="TableRowColor">
+<TD WIDTH="1%" VALIGN="top" ALIGN="right"><FONT SIZE="-1"><CODE>&nbsp;varchar2</CODE></FONT></TD><TD><CODE><B><A HREF="#get_folder_name">get_folder_name</A></B>()</CODE>
+<BR>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+       Returns the short name of the current folder
+</TD>
+</TR>
+<TR CLASS="TableRowColor">
+<TD WIDTH="1%" VALIGN="top" ALIGN="right"><FONT SIZE="-1"><CODE>&nbsp;mail_array_ct</CODE></FONT></TD><TD><CODE><B><A HREF="#get_folders">get_folders</A></B>()</CODE>
+<BR>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+       Retrieves the current folders' subfolder list
+</TD>
+</TR>
+<TR CLASS="TableRowColor">
+<TD WIDTH="1%" VALIGN="top" ALIGN="right"><FONT SIZE="-1"><CODE>&nbsp;mail_t</CODE></FONT></TD><TD><CODE><B><A HREF="#get_mail_headers">get_mail_headers</A></B>()</CODE>
+<BR>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+       Retrieve all messages in the folder as <i>TABLE OF MAIL_T</i>.</TD>
+</TR>
+<TR CLASS="TableRowColor">
+<TD WIDTH="1%" VALIGN="top" ALIGN="right"><FONT SIZE="-1"><CODE>&nbsp;mail_t</CODE></FONT></TD><TD><CODE><B><A HREF="#get_mail_headers_p">get_mail_headers_p</A></B>()</CODE>
+<BR>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+       Retrieve all messages in the folder as <i>TABLE OF MAIL_T</i>.</TD>
+</TR>
+<TR CLASS="TableRowColor">
+<TD WIDTH="1%" VALIGN="top" ALIGN="right"><FONT SIZE="-1"><CODE>&nbsp;mail_t</CODE></FONT></TD><TD><CODE><B><A HREF="#get_message(number)">get_message</A></B>(p_message_number number)</CODE>
+<BR>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+       Get the Message object corresponding to the given message number.</TD>
+</TR>
+<TR CLASS="TableRowColor">
+<TD WIDTH="1%" VALIGN="top" ALIGN="right"><FONT SIZE="-1"><CODE>&nbsp;number</CODE></FONT></TD><TD><CODE><B><A HREF="#get_message_count">get_message_count</A></B>()</CODE>
+<BR>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+       Returns the message count within the current folders
+</TD>
+</TR>
+<TR CLASS="TableRowColor">
+<TD WIDTH="1%" VALIGN="top" ALIGN="right"><FONT SIZE="-1"><CODE>&nbsp;number</CODE></FONT></TD><TD><CODE><B><A HREF="#get_new_message_count">get_new_message_count</A></B>()</CODE>
+<BR>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+       Returns the "New Message" count within the current folders
+</TD>
+</TR>
+<TR CLASS="TableRowColor">
+<TD WIDTH="1%" VALIGN="top" ALIGN="right"><FONT SIZE="-1"><CODE>&nbsp;number</CODE></FONT></TD><TD><CODE><B><A HREF="#get_unread_message_count">get_unread_message_count</A></B>()</CODE>
+<BR>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+       Returns the "Unread Message" count within the current folders
+</TD>
+</TR>
+<TR CLASS="TableRowColor">
+<TD WIDTH="1%" VALIGN="top" ALIGN="right"><FONT SIZE="-1"><CODE>&nbsp;number</CODE></FONT></TD><TD><CODE><B><A HREF="#is_connected">is_connected</A></B>()</CODE>
+<BR>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+       Checks whether the session is currently connected to a mailserver.</TD>
+</TR>
+<TR CLASS="TableRowColor">
+<TD WIDTH="1%" VALIGN="top" ALIGN="right"><FONT SIZE="-1"><CODE>&nbsp;</CODE></FONT></TD><TD><CODE><B><A HREF="#open_child_folder(varchar2)">open_child_folder</A></B>(p_foldername varchar2)</CODE>
+<BR>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+       Opens a child folder
+</TD>
+</TR>
+<TR CLASS="TableRowColor">
+<TD WIDTH="1%" VALIGN="top" ALIGN="right"><FONT SIZE="-1"><CODE>&nbsp;</CODE></FONT></TD><TD><CODE><B><A HREF="#open_folder(varchar2)">open_folder</A></B>(p_folder varchar2)</CODE>
+<BR>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+       Opens a mailbox folder
+</TD>
+</TR>
+<TR CLASS="TableRowColor">
+<TD WIDTH="1%" VALIGN="top" ALIGN="right"><FONT SIZE="-1"><CODE>&nbsp;</CODE></FONT></TD><TD><CODE><B><A HREF="#open_inbox">open_inbox</A></B>()</CODE>
+<BR>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+       Opens the mailbox folder "INBOX".</TD>
+</TR>
+<TR CLASS="TableRowColor">
+<TD WIDTH="1%" VALIGN="top" ALIGN="right"><FONT SIZE="-1"><CODE>&nbsp;</CODE></FONT></TD><TD><CODE><B><A HREF="#open_parent_folder">open_parent_folder</A></B>()</CODE>
+<BR>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+       Opens the parent folder.</TD>
+</TR>
+<TR CLASS="TableRowColor">
+<TD WIDTH="1%" VALIGN="top" ALIGN="right"><FONT SIZE="-1"><CODE>&nbsp;</CODE></FONT></TD><TD><CODE><B><A HREF="#rename_folder(varchar2,varchar2)">rename_folder</A></B>(p_foldername varchar2, p_new_foldername varchar2)</CODE>
+<BR>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+       Renames a folder
+</TD>
+</TR>
+<TR CLASS="TableRowColor">
+<TD WIDTH="1%" VALIGN="top" ALIGN="right"><FONT SIZE="-1"><CODE>&nbsp;varchar2</CODE></FONT></TD><TD><CODE><B><A HREF="#rfc_decode(varchar2)">rfc_decode</A></B>(p_text varchar2)</CODE>
+<BR>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+       Decodes encoded special characters (unicode, etc) to normal text.</TD>
+</TR>
+<TR CLASS="TableRowColor">
+<TD WIDTH="1%" VALIGN="top" ALIGN="right"><FONT SIZE="-1"><CODE>&nbsp;</CODE></FONT></TD><TD><CODE><B><A HREF="#set_fetch_limit(number)">set_fetch_limit</A></B>(p_limit number)</CODE>
+<BR>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+       Sets the Fetch Limit for GET_MAIL_HEADERS.</TD>
+</TR>
+</TABLE>
+<P></P>
+<A NAME="trigger_summary"></A><A NAME="field_detail"></A>
+<TABLE WIDTH="100%" CELLSPACING="0" CELLPADDING="3" BORDER="1">
+<TR CLASS="TableHeadingColor">
+<TD COLSPAN="1"><FONT SIZE="+2"><B>Field Detail</B></FONT></TD>
+</TR>
+</TABLE>
+<A NAME="PROTOCOL_IMAP"></A>
+<H3>PROTOCOL_IMAP</H3>
+<PRE>
+  public varchar2(4) <B>PROTOCOL_IMAP</B>
+</PRE>
+<DL>
+<DD> Constant for procedure <b>CONNECT_SERVER</b>: Use the IMAP protocol
+</DD>
+<DD>
+<DL></DL>
+</DD>
+</DL>
+<HR>
+<A NAME="PROTOCOL_POP3"></A>
+<H3>PROTOCOL_POP3</H3>
+<PRE>
+  public varchar2(4) <B>PROTOCOL_POP3</B>
+</PRE>
+<DL>
+<DD> Constant for procedure <b>CONNECT_SERVER</b>: Use the POP3 protocol
+</DD>
+<DD>
+<DL></DL>
+</DD>
+</DL>
+<HR>
+<A NAME="type_detail"></A><A NAME="method_detail"></A>
+<TABLE WIDTH="100%" CELLSPACING="0" CELLPADDING="3" BORDER="1">
+<TR CLASS="TableHeadingColor">
+<TD COLSPAN="1"><FONT SIZE="+2"><B>Method Detail</B></FONT></TD>
+</TR>
+</TABLE>
+<A NAME="connect_server(varchar2,number,varchar2,varchar2,varchar2,boolean)"></A>
+<H3>connect_server</H3>
+<PRE>public  <B>connect_server</B>(p_hostname varchar2, <BR>                       p_port number, <BR>                       p_protocol varchar2, <BR>                       p_userid varchar2, <BR>                       p_passwd varchar2, <BR>                       p_ssl boolean)</PRE>
+<DL>
+<DD> Connects to a mailserver.
+</DD>
+<DD>
+<DL>
+<DT>Parameters:
+        <DD>
+<CODE>p_hostname</CODE> -
+              Hostname of the mail server</DD>
+<DD>
+<CODE>p_port</CODE> -
+              TCP/IP port of the mail server. For IMAP connections this is typically <b>143</b>, for POP3 connections <b>110</b>.</DD>
+<DD>
+<CODE>p_protocol</CODE> -
+              Protocol to use: Either <b>MAIL_CLIENT.PROTOCOL_IMAP</b> or <b>MAIL_CLIENT.PROTOCOL_POP3</b>.</DD>
+<DD>
+<CODE>p_userid</CODE> -
+              Userid for the mailserver connection.</DD>
+<DD>
+<CODE>p_passwd</CODE> -
+              Password for the mailserver connection.</DD>
+<DD>
+<CODE>p_ssl</CODE> -
+              SSL flag - defaults to <b>false</b>.</DD>
+</DT>
+</DL>
+</DD>
+<P></P>
+<DL></DL>
+</DL>
+<HR>
+<A NAME="is_connected"></A>
+<H3>is_connected</H3>
+<PRE>public number <B>is_connected</B>()</PRE>
+<DL>
+<DD> Checks whether the session is currently connected to a mailserver.
+</DD>
+<DD>
+<DL>
+<DT>Returns:
+          <DD>1 if a connection exists, 0 otherwise.</DD>
+</DT>
+</DL>
+</DD>
+<P></P>
+<DL></DL>
+</DL>
+<HR>
+<A NAME="open_inbox"></A>
+<H3>open_inbox</H3>
+<PRE>public  <B>open_inbox</B>()</PRE>
+<DL>
+<DD> Opens the mailbox folder "INBOX". On most mailservers this folder contains the
+ new messages.
+</DD>
+<DD>
+<DL></DL>
+</DD>
+<P></P>
+<DL></DL>
+</DL>
+<HR>
+<A NAME="open_folder(varchar2)"></A>
+<H3>open_folder</H3>
+<PRE>public  <B>open_folder</B>(p_folder varchar2)</PRE>
+<DL>
+<DD> Opens a mailbox folder
+</DD>
+<DD>
+<DL>
+<DT>Parameters:
+        <DD>
+<CODE>p_folder</CODE> -
+              absolute folder path</DD>
+</DT>
+</DL>
+</DD>
+<P></P>
+<DL></DL>
+</DL>
+<HR>
+<A NAME="open_parent_folder"></A>
+<H3>open_parent_folder</H3>
+<PRE>public  <B>open_parent_folder</B>()</PRE>
+<DL>
+<DD> Opens the parent folder. If the current folder is the root of the folder hierarchy the procedure
+ does nothing.
+</DD>
+<DD>
+<DL></DL>
+</DD>
+<P></P>
+<DL></DL>
+</DL>
+<HR>
+<A NAME="open_child_folder(varchar2)"></A>
+<H3>open_child_folder</H3>
+<PRE>public  <B>open_child_folder</B>(p_foldername varchar2)</PRE>
+<DL>
+<DD> Opens a child folder
+</DD>
+<DD>
+<DL>
+<DT>Parameters:
+        <DD>
+<CODE>p_foldername</CODE> -
+              folder path to be opened relative to the current folder</DD>
+</DT>
+</DL>
+</DD>
+<P></P>
+<DL></DL>
+</DL>
+<HR>
+<A NAME="close_folder"></A>
+<H3>close_folder</H3>
+<PRE>public  <B>close_folder</B>()</PRE>
+<DL>
+<DD> closes the currently open mailbox folder. The mailbox' <i>root folder</i> is the "current" folder afterwards.
+</DD>
+<DD>
+<DL></DL>
+</DD>
+<P></P>
+<DL></DL>
+</DL>
+<HR>
+<A NAME="expunge_folder"></A>
+<H3>expunge_folder</H3>
+<PRE>public  <B>expunge_folder</B>()</PRE>
+<DL>
+<DD> performs the "expunge" operation on the mailbox folder: permanatly deletes all messages marked as "deleted".
+</DD>
+<DD>
+<DL></DL>
+</DD>
+<P></P>
+<DL></DL>
+</DL>
+<HR>
+<A NAME="disconnect_server"></A>
+<H3>disconnect_server</H3>
+<PRE>public  <B>disconnect_server</B>()</PRE>
+<DL>
+<DD> disconnects from the server.
+</DD>
+<DD>
+<DL></DL>
+</DD>
+<P></P>
+<DL></DL>
+</DL>
+<HR>
+<A NAME="get_mail_headers_p"></A>
+<H3>get_mail_headers_p</H3>
+<PRE>public mail_t <B>get_mail_headers_p</B>()</PRE>
+<DL>
+<DD> Retrieve all messages in the folder as <i>TABLE OF MAIL_T</i>. Message-specific operations
+ can be done via methods of <b>MAIL_T</b>. <i>This is the pipelined version of the function; which
+ returns the first messages more quickly and is more memory efficient</i>.
+ <pre>
+ SELECT * FROM TABLE(MAIL_CLIENT.GET_MAIL_HEADERS_P())
+ </pre>
+</DD>
+<DD>
+<DL>
+<DT>Returns:
+          <DD>messages of the current folder as <i>TABLE OF MAIL_T</i></DD>
+</DT>
+</DL>
+</DD>
+<P></P>
+<DL></DL>
+</DL>
+<HR>
+<A NAME="get_mail_headers"></A>
+<H3>get_mail_headers</H3>
+<PRE>public mail_t <B>get_mail_headers</B>()</PRE>
+<DL>
+<DD> Retrieve all messages in the folder as <i>TABLE OF MAIL_T</i>. Message-specific operations
+ can be done via methods of <b>MAIL_T</b>.
+ <pre>
+ SELECT * FROM TABLE(MAIL_CLIENT.GET_MAIL_HEADERS())
+ </pre>
+</DD>
+<DD>
+<DL>
+<DT>Returns:
+          <DD>messages of the current folder as <i>TABLE OF MAIL_T</i></DD>
+</DT>
+</DL>
+</DD>
+<P></P>
+<DL></DL>
+</DL>
+<HR>
+<A NAME="get_message(number)"></A>
+<H3>get_message</H3>
+<PRE>public mail_t <B>get_message</B>(p_message_number number)</PRE>
+<DL>
+<DD> Get the Message object corresponding to the given message number. A Message object's
+ message number is the relative position of this Message in its Folder. Messages are
+ numbered starting at 1 thro get_priority return varchar2ugh the total number of message in the folder. Note that
+ the message number for a particular Message can change during a session if other
+ messages in the Folder are deleted and the Folder is expunged.
+</DD>
+<DD>
+<DL>
+<DT>Parameters:
+        <DD>
+<CODE>p_message_number</CODE> -
+              the message number</DD>
+</DT>
+<DT>Returns:
+          <DD>the message object as <b>MAIL_T</b></DD>
+</DT>
+</DL>
+</DD>
+<P></P>
+<DL></DL>
+</DL>
+<HR>
+<A NAME="get_message_count"></A>
+<H3>get_message_count</H3>
+<PRE>public number <B>get_message_count</B>()</PRE>
+<DL>
+<DD> Returns the message count within the current folders
+</DD>
+<DD>
+<DL>
+<DT>Returns:
+          <DD>NUMBER message count</DD>
+</DT>
+</DL>
+</DD>
+<P></P>
+<DL></DL>
+</DL>
+<HR>
+<A NAME="get_new_message_count"></A>
+<H3>get_new_message_count</H3>
+<PRE>public number <B>get_new_message_count</B>()</PRE>
+<DL>
+<DD> Returns the "New Message" count within the current folders
+</DD>
+<DD>
+<DL>
+<DT>Returns:
+          <DD>NUMBER message count</DD>
+</DT>
+</DL>
+</DD>
+<P></P>
+<DL></DL>
+</DL>
+<HR>
+<A NAME="get_unread_message_count"></A>
+<H3>get_unread_message_count</H3>
+<PRE>public number <B>get_unread_message_count</B>()</PRE>
+<DL>
+<DD> Returns the "Unread Message" count within the current folders
+</DD>
+<DD>
+<DL>
+<DT>Returns:
+          <DD>NUMBER message count</DD>
+</DT>
+</DL>
+</DD>
+<P></P>
+<DL></DL>
+</DL>
+<HR>
+<A NAME="get_fetch_limit"></A>
+<H3>get_fetch_limit</H3>
+<PRE>public number <B>get_fetch_limit</B>()</PRE>
+<DL>
+<DD> Returns the current Fetch Limit for GET_MAIL_HEADERS. Note that this only affects
+ the amount of message headers passed from the JVM to the PL/SQL layer. The Java Mail
+ API always retrieves all message headers matching the filter from the POP3 or IMAP server.
+</DD>
+<DD>
+<DL>
+<DT>Returns:
+          <DD>NUMBER the current fetch limit - "-1" stands for "unlimited".</DD>
+</DT>
+</DL>
+</DD>
+<P></P>
+<DL></DL>
+</DL>
+<HR>
+<A NAME="set_fetch_limit(number)"></A>
+<H3>set_fetch_limit</H3>
+<PRE>public  <B>set_fetch_limit</B>(p_limit number)</PRE>
+<DL>
+<DD> Sets the Fetch Limit for GET_MAIL_HEADERS. Note that this only affects
+ the amount of message headers passed from the JVM to the PL/SQL layer. The Java Mail
+ API always retrieves all message headers matching the filter from the POP3 or IMAP server.
+</DD>
+<DD>
+<DL>
+<DT>Parameters:
+        <DD>
+<CODE>p_limit</CODE> -
+              the new Fetch Limit for GET_MAIL_HEADERS - "-1" means: unlimited</DD>
+</DT>
+</DL>
+</DD>
+<P></P>
+<DL></DL>
+</DL>
+<HR>
+<A NAME="get_folders"></A>
+<H3>get_folders</H3>
+<PRE>public mail_array_ct <B>get_folders</B>()</PRE>
+<DL>
+<DD> Retrieves the current folders' subfolder list
+</DD>
+<DD>
+<DL>
+<DT>Returns:
+          <DD>VARCHAR2 Array containing the current folders' subfolder names</DD>
+</DT>
+</DL>
+</DD>
+<P></P>
+<DL></DL>
+</DL>
+<HR>
+<A NAME="rfc_decode(varchar2)"></A>
+<H3>rfc_decode</H3>
+<PRE>public varchar2 <B>rfc_decode</B>(p_text varchar2)</PRE>
+<DL>
+<DD> Decodes encoded special characters (unicode, etc) to normal text.
+ <pre>
+ SQL> select mail_client.decode('Test f=?iso-8859-15?B?/A==?=r den Mailserver') decoded_text from dual;
+
+ DECODED_TEXT
+ --------------------------------------------------------------------------------
+ Test f&uuml;r den Mailserver
+ </pre>
+</DD>
+<DD>
+<DL>
+<DT>Parameters:
+        <DD>
+<CODE>p_text</CODE> -
+              the text to be decoded</DD>
+</DT>
+<DT>Returns:
+          <DD>decoded text</DD>
+</DT>
+</DL>
+</DD>
+<P></P>
+<DL></DL>
+</DL>
+<HR>
+<A NAME="create_folder(varchar2)"></A>
+<H3>create_folder</H3>
+<PRE>public  <B>create_folder</B>(p_foldername varchar2)</PRE>
+<DL>
+<DD> Creates a folder under the current folder
+</DD>
+<DD>
+<DL>
+<DT>Parameters:
+        <DD>
+<CODE>p_foldername</CODE> -
+              the path of the subfolder to be created relative to the current folder.</DD>
+</DT>
+</DL>
+</DD>
+<P></P>
+<DL></DL>
+</DL>
+<HR>
+<A NAME="rename_folder(varchar2,varchar2)"></A>
+<H3>rename_folder</H3>
+<PRE>public  <B>rename_folder</B>(p_foldername varchar2, <BR>                      p_new_foldername varchar2)</PRE>
+<DL>
+<DD> Renames a folder
+</DD>
+<DD>
+<DL>
+<DT>Parameters:
+        <DD>
+<CODE>p_foldername</CODE> -
+              the path of the subfolder to be renamed relative to the current folder.</DD>
+<DD>
+<CODE>p_new_foldername</CODE> -
+              the new path relative to the current folder.</DD>
+</DT>
+</DL>
+</DD>
+<P></P>
+<DL></DL>
+</DL>
+<HR>
+<A NAME="delete_folder(varchar2)"></A>
+<H3>delete_folder</H3>
+<PRE>public  <B>delete_folder</B>(p_foldername varchar2)</PRE>
+<DL>
+<DD> Deletes a subfolder under the current folder
+</DD>
+<DD>
+<DL>
+<DT>Parameters:
+        <DD>
+<CODE>p_foldername</CODE> -
+              the path of the subfolder to be deleted relative to the current folder.</DD>
+</DT>
+</DL>
+</DD>
+<P></P>
+<DL></DL>
+</DL>
+<HR>
+<A NAME="get_folder_name"></A>
+<H3>get_folder_name</H3>
+<PRE>public varchar2 <B>get_folder_name</B>()</PRE>
+<DL>
+<DD> Returns the short name of the current folder
+</DD>
+<DD>
+<DL>
+<DT>Returns:
+          <DD>short name of the current folder.</DD>
+</DT>
+</DL>
+</DD>
+<P></P>
+<DL></DL>
+</DL>
+<HR>
+<A NAME="get_folder_fullname"></A>
+<H3>get_folder_fullname</H3>
+<PRE>public varchar2 <B>get_folder_fullname</B>()</PRE>
+<DL>
+<DD> Returns the full name of the current folder
+</DD>
+<DD>
+<DL>
+<DT>Returns:
+          <DD>full name of the current folder.</DD>
+</DT>
+</DL>
+</DD>
+<P></P>
+<DL></DL>
+</DL>
+<HR>
+<A NAME="trigger_detail"></A>
+<TABLE CELLSPACING="0" CELLPADDING="1" WIDTH="100%" BORDER="0">
+<TR>
+<TD CLASS="NavBarRow1" COLSPAN="2">
+<TABLE CELLSPACING="3" CELLPADDING="0" BORDER="0">
+<TR VALIGN="top" ALIGN="center">
+<TD CLASS="NavBarRow1"><A HREF="summary.html"><FONT CLASS="NavBarFont1"><B>Overview</B></FONT></A> &nbsp;</TD><TD CLASS="NavBarRow1"><A HREF="deprecated-list.html"><FONT CLASS="NavBarFont1"><B>Deprecated</B></FONT></A> &nbsp;</TD><TD CLASS="NavBarRow1"><A HREF="index-list.html"><FONT CLASS="NavBarFont1"><B>Index</B></FONT></A> &nbsp;</TD><TD CLASS="NavBarRow1"><A HREF="generator.html"><FONT CLASS="NavBarFont1"><B>Generator</B></FONT></A> &nbsp;</TD>
+</TR>
+</TABLE>
+</TD><TD rowspan="3" VALIGN="top" ALIGN="right"><EM><b>PL/SQL Email Client</b></EM></TD>
+</TR>
+<TR>
+<TD CLASS="NavBarRow3" VALIGN="top"><FONT SIZE="-2">
+      SUMMARY:  <A HREF="#field_summary">FIELD</A> | <A HREF="#type_summary">TYPE</A> | <A HREF="#method_summary">METHOD</A></FONT></TD><TD CLASS="NavBarRow3" VALIGN="top"><FONT SIZE="-2">
+    DETAIL:  <A HREF="#field_detail">FIELD</A> | <A HREF="#type_detail">TYPE</A> | <A HREF="#method_detail">METHOD</A></FONT></TD>
+</TR>
+</TABLE>
+<HR>
+</BODY>
+</HTML>
